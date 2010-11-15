@@ -1,0 +1,23 @@
+/*
+
+Styling the demo page and all the controls.
+
+You don't need any of this to make the counter work.
+
+I know it's messy... it's a demo.
+
+*/
+
+body{font-family:verdana}
+p{line-height:16px;margin:0}
+#wrapper{float:right;position:relative;left:-50%;margin-top:30px}
+#counter{position:relative;left:50%}
+.clear{clear:both}
+#demo_controls{width:700px;margin:20px auto;list-style-type:none}
+#demo_controls li{width:700px;text-align:center;margin-bottom:20px;font-weight:bold;font-size:14px}
+.demo_widget{width:700px;margin-top:10px}
+#math, #set{display:none}
+a.expand:link, a.expand:visited, a.expand:active, a.expand.hover{text-decoration:none;font-size:10px;color:#aaa}
+.explain{width:680px;margin:10px auto 0;padding:10px;font-weight:normal;font-size:12px;background:#eee;border:1px solid #666;text-align:center}
+.toggle{display:none}
+code{font-weight:bold;margin:5px 0;display:block}

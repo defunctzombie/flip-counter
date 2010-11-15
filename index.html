@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<head>
+
+	<title>New Apple-Style Flip Counter Demo</title>
+	<meta charset="utf-8" />
+	<meta name="description" content="A more functional version of my Apple-Style Counter." />
+	<meta name="keywords" content="HTML,CSS,JavaScript,counter,apple-style,flip,animate,digit,demo" />
+	<meta name="author" content="Chris Nanney" />
+
+	<!-- jQuery from Google CDN, REQUIRED -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+	<!-- My flip counter script, REQUIRED -->
+	<script type="text/javascript" src="js/flipcounter.js"></script>
+	<!-- Style sheet for the counter, REQUIRED -->
+	<link rel="stylesheet" type="text/css" href="css/counter.css" />
+
+
+	<!-- jQueryUI from Google CDN, used only for the fancy demo controls, NOT REQUIRED for the counter itself -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js"></script>
+	<!-- Style sheet for the jQueryUI controls, NOT REQUIRED for the counter itself -->
+	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/vader/jquery-ui.css" />
+	<!-- Style sheet for the demo page, NOT REQUIRED for the counter itself -->
+	<link rel="stylesheet" type="text/css" href="css/demo.css" />
+
+</head>
+
+<body>
+
+	<div class="explain">
+		<p>This counter was initialized with the following code:</p>
+		<code>var myCounter = new flipCounter('#counter', {value:10000, inc:123, pace:1000, auto:true});</code>
+		<p>Use the controls below to make changes to the counter using built-in methods.</p>
+	</div>
+
+	<div id="wrapper"><div id="counter"></div></div>
+
+	<div class="clear"></div>
+	<ul id="demo_controls">
+		<li>Increment: 
+			<span id="inc_value">123</span> <a href="#" class="expand">[?]</a><div id="inc_slider" class="demo_widget"></div>
+			<div class="explain toggle">
+				<p>This slider controls the counter increment by using the <b>setIncrement</b> method:</p>
+				<code>myCounter.setIncrement(value);</code>
+			</div>
+		</li>
+		<li>Pace: 
+			<span id="pace_value">1000</span>ms <a href="#" class="expand">[?]</a><div id="pace_slider" class="demo_widget"></div>
+			<div class="explain toggle">
+				<p>This slider controls the counter pace by using the <b>setPace</b> method:</p>
+				<code>myCounter.setPace(value);</code>
+			</div>
+		</li>
+		<li>Auto-Increment: <a href="#" class="expand">[?]</a>
+			<div id="auto_toggle" class="demo_widget">
+				<input type="radio" id="auto1" name="auto" value="on" checked="checked" /><label for="auto1">On</label>
+				<input type="radio" id="auto2" name="auto" value="off" /><label for="auto2">Off</label>
+				<button id="counter_step">Step</button>
+			</div>
+			<div class="explain toggle">
+				<p>These buttons start and stop auto-incrementing the counter using the <b>setAuto</b> method:</p>
+				<code>myCounter.setAuto(false);</code>
+				<p>When auto-increment is off, you can use the third button to step through the animation one increment at a time using the <b>step</b> method:</p>
+				<code>myCounter.step();</code>
+			</div>
+		</li>
+		<li id="math">Addition / Subtraction: <a href="#" class="expand">[?]</a>
+			<div id="add_sub" class="demo_widget">
+				<button id="add">Add 567</button>
+				<button id="sub">Subtract 567</button>
+			</div>
+			<div class="explain toggle">
+				<p>You can also add and subtract a value to/from the counter using the <b>add</b> and <b>subtract</b> methods:</p>
+				<code>myCounter.add(567);</code>
+				<code>myCounter.subtract(567);</code>
+			</div>
+		</li>
+		<li id="set">Set Value: <a href="#" class="expand">[?]</a>
+			<div class="demo_widget">
+				<button id="set_val">Set value of counter to 12,345</button>
+			</div>
+			<div class="explain toggle">
+				<p>You can manually set the value of the counter at any time using the <b>setValue</b> method:</p>
+				<code>myCounter.setValue(12345);</code>
+			</div>
+		</li>
+	</ul>
+
+	<script type="text/javascript">
+	//<![CDATA[
+
+	// Initialize a new counter
+	var myCounter = new flipCounter('counter', {value:10000, inc:123, pace:1000, auto:true});
+
+	$(function(){
+
+		/**
+		 * Demo controls
+		 */
+		
+		// Increment
+		$( "#inc_slider" ).slider({
+			range: "max",
+			value: 123,
+			min: 1,
+			max: 1000,
+			slide: function( event, ui ) {
+				myCounter.setIncrement(ui.value);
+				$("#inc_value").text(ui.value);
+			}
+		});
+		
+		// Pace
+		$( "#pace_slider" ).slider({
+			range: "max",
+			value: 1000,
+			min: 100,
+			max: 1000,
+			step: 100,
+			slide: function( event, ui ) {
+				myCounter.setPace(ui.value);
+				$("#pace_value").text(ui.value);
+			}
+		});
+		
+		// Auto-increment
+		$("#auto_toggle").buttonset();
+		$("input[name=auto]").change(function(){
+			if ($("#auto1:checked").length == 1){
+				$("#counter_step").button({disabled: true});
+				$("#math, #set").hide();
+				myCounter.setAuto(true);
+			}
+			else{
+				$("#counter_step").button({disabled: false});
+				$("#math, #set").show();
+				$("#add_sub").buttonset();
+				$("#set_val").button();
+				myCounter.setAuto(false);
+			}
+		});
+		$("#counter_step").button({disabled: true});
+		$("#counter_step").button().click(function(){
+			myCounter.step();
+			return false;
+		});
+		
+		// Addition/Subtraction
+		$("#add").click(function(){
+			myCounter.add(567);
+			return false;
+		});
+		$("#sub").click(function(){
+			myCounter.subtract(567);
+			return false;
+		});
+		
+		// Set value
+		$("#set_val").click(function(){
+			myCounter.setValue(12345);
+			return false;
+		});
+		
+		// Expand help
+		$("a.expand").click(function(){
+			$(this).parent().children(".toggle").slideToggle(200);
+			return false;
+		});
+
+	});
+
+	//]]>
+	</script>
+</body>
+
+</html>
