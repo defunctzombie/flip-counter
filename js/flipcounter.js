@@ -266,7 +266,7 @@ var flipCounter = function(d, options){
 			$(div + " #d" + i + " li.b").css({'background-position': '0 -' + (digits[i] * bFrameHeight) + 'px'});
 		}
 		// Do first animation
-		if (o.auto === true) doCount();
+		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
 	}
 	
 	// http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric/1830844

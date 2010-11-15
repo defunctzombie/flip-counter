@@ -29,7 +29,7 @@
 
 	<div class="explain">
 		<p>This counter was initialized with the following code:</p>
-		<code>var myCounter = new flipCounter('#counter', {value:10000, inc:123, pace:1000, auto:true});</code>
+		<code>var myCounter = new flipCounter('#counter', {value:10000, inc:123, pace:800, auto:true});</code>
 		<p>Use the controls below to make changes to the counter using built-in methods.</p>
 		<p><a class="back" href="http://cnanney.com/journal/code/apple-style-counter-revisited/">http://cnanney.com/journal/code/apple-style-counter-revisited/</a></p>
 	</div>
@@ -46,7 +46,7 @@
 			</div>
 		</li>
 		<li>Pace: 
-			<span id="pace_value">1000</span>ms <a href="#" class="expand">[?]</a><div id="pace_slider" class="demo_widget"></div>
+			<span id="pace_value">800</span>ms <a href="#" class="expand">[?]</a><div id="pace_slider" class="demo_widget"></div>
 			<div class="explain toggle">
 				<p>This slider controls the counter pace by using the <b>setPace</b> method:</p>
 				<code>myCounter.setPace(value);</code>
@@ -91,7 +91,7 @@
 	//<![CDATA[
 
 	// Initialize a new counter
-	var myCounter = new flipCounter('counter', {value:10000, inc:123, pace:1000, auto:true});
+	var myCounter = new flipCounter('counter', {value:10000, inc:123, pace:800, auto:true});
 
 	$(function(){
 
@@ -114,7 +114,7 @@
 		// Pace
 		$( "#pace_slider" ).slider({
 			range: "max",
-			value: 1000,
+			value: 800,
 			min: 100,
 			max: 1000,
 			step: 100,
