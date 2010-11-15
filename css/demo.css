@@ -18,6 +18,7 @@ p{line-height:16px;margin:0}
 .demo_widget{width:700px;margin-top:10px}
 #math, #set{display:none}
 a.expand:link, a.expand:visited, a.expand:active, a.expand.hover{text-decoration:none;font-size:10px;color:#aaa}
+a.back:link, a.back:visited, a.back:active, a.back.hover{text-decoration:underline;font-size:10px;color:#333;display:block;margin-top:4px}
 .explain{width:680px;margin:10px auto 0;padding:10px;font-weight:normal;font-size:12px;background:#eee;border:1px solid #666;text-align:center}
 .toggle{display:none}
 code{font-weight:bold;margin:5px 0;display:block}
