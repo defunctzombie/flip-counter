@@ -8,9 +8,6 @@
  *
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
- *
- * Version: 1.0
- * Released: November 15, 2010
  */
 
 var flipCounter = function(d, options){
@@ -83,7 +80,7 @@ var flipCounter = function(d, options){
 			doCount();
 		}
 		if (! a && o.auto){
-			if (nextCount) clearTimeout(nextCount);
+			if (nextCount) clearNext();
 			o.auto = false;
 		}
 		return this;
@@ -135,6 +132,92 @@ var flipCounter = function(d, options){
 		return this;
 	};
 	
+	/**
+	 * Increments counter to given value, animating by current pace and increment.
+	 *
+	 * @param {int} n
+	 *   Number to increment to
+	 */
+	this.incrementTo = function(n){
+		if (nextCount) clearNext();
+		doIncrement(n);
+	}
+	
+	/**
+	 * Increments counter to given value, animating by current pace and increment.
+	 *
+	 * @param {int} n
+	 *   Number to increment to
+	 * @param {int} p
+	 *   Desired pace, if possible
+	 * @param {int} t
+	 *   Time duration in seconds
+	 */
+	this.smartIncrementTo = function(n, p, t){
+		var time = isNumber(t) ? t * 1000 : 10000,
+		pace = isNumber(p) ? p : o.pace,
+		diff = isNumber(n) ? n - o.value : 0,
+		cycles = Math.floor(time / pace),
+		inc = Math.round(diff / cycles),
+		q = diff - (cycles * inc),
+		i = 0,
+		nq, best = {
+			pace: 0,
+			inc: 0
+		};
+		
+		if (diff > 0){
+			while ((diff / cycles < 1 || cycles * inc > diff || Math.abs(cycles * inc - diff) > 5 ||
+					Math.abs(cycles * pace - time) > 100) && i < 100){
+				pace += 50;
+				cycles = Math.floor(time / pace);
+				inc = Math.round(diff / cycles);
+				nq = diff - (cycles * inc);
+				
+				if (nq < q){
+					q = nq;
+					best.pace = pace;
+					best.inc = inc;
+				}
+
+				i++;
+			}
+			
+			if (i == 100){
+				// Could not find optimal settings, use best found so far
+				o.inc = best.inc;
+				o.pace = best.pace;
+			}
+			else{
+				// Optimal settings found, use those
+				o.inc = inc;
+				o.pace = pace;
+			}
+			
+			if (nextCount) clearNext();
+			doIncrement(n);
+		}
+		
+		// Left in from debugging
+		function doLog(){
+			console.log('Pace: ' + pace + '\nCycles: ' + cycles + '\nInc: ' + inc + '\n\nDiff: ' + diff + '\nCalc: ' + cycles*inc);
+		}
+	}
+	
+	/**
+	 * Gets current value of counter.
+	 */
+	this.getValue = function(){
+		return o.value;
+	}
+	
+	/**
+	 * Stops all running increments.
+	 */
+	this.stop = function(){
+		if (nextCount) clearNext();
+	}
+	
 	//---------------------------------------------------------------------------//
 	
 	function doCount(){
@@ -143,6 +226,23 @@ var flipCounter = function(d, options){
 		y = o.value.toString();
 		digitCheck(x,y);
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
+	}
+	
+	function doIncrement(n){
+		var val = o.value;
+		if (val != n){
+			x = o.value.toString(),
+			o.auto = true;
+
+			if (val + o.inc <= n) val += o.inc
+			else val = n;
+			
+			o.value = val;
+			y = o.value.toString();
+			digitCheck(x,y);
+			nextCount = setTimeout(function(){doIncrement(n)}, o.pace);
+		}
+		else o.auto = false;
 	}
 	
 	function digitCheck(x,y){
@@ -241,11 +341,9 @@ var flipCounter = function(d, options){
 	
 	// Removes digit
 	function removeDigit(id){
-		console.log('tried to remove digit: ' + id);
 		$(div + " #d" + id).remove();
 		// Check for leading comma
 		var first = $(div + " li").first();
-		
 		if (first.hasClass("s")) first.parent("ul").remove();
 	}
 
@@ -272,6 +370,11 @@ var flipCounter = function(d, options){
 	// http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric/1830844
 	function isNumber(n) {
 		return !isNaN(parseFloat(n)) && isFinite(n);
+	}
+	
+	function clearNext(){
+		clearTimeout(nextCount);
+		nextCount = null;
 	}
 	
 	// Start it up
