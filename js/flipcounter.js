@@ -184,7 +184,7 @@ var flipCounter = function(d, options){
 		
 		if (diff > 0){
 			while ((diff / cycles < 1 || cycles * inc > diff || Math.abs(cycles * inc - diff) > 5 ||
-					Math.abs(cycles * pace - time) > 100) && i < 100){				
+					Math.abs(cycles * pace - time) > 100 || cycles * pace > time) && i < 100){				
 				
 				pace += 10;
 				cycles = Math.floor(time / pace);
@@ -227,15 +227,18 @@ var flipCounter = function(d, options){
 		function checkLog(diff, cycles, inc, pace, time){
 			// Test conditions, all must pass to continue:
 			// 1: Unrounded inc value needs to be at least 1
-			var cond1 = (diff / cycles >= 1) ? 'passed' : 'failed',
+			var cond1 = (diff / cycles >= 1) ? 'pass' : 'fail',
 			// 2: Don't want to overshoot the target number
-			cond2 = (cycles * inc <= diff) ? 'passed' : 'failed',
+			cond2 = (cycles * inc <= diff) ? 'pass' : 'fail',
 			// 3: Want to be within 5 of the target number
-			cond3 = (Math.abs(cycles * inc - diff) <= 5) ? 'passed' : 'failed',
+			cond3 = (Math.abs(cycles * inc - diff) <= 5) ? 'pass' : 'fail',
 			// 4: Total time should be within 100ms of target time.
-			//    Not checking if it goes over, because old timeouts clear when method is called.
-			cond4 = (Math.abs(cycles * pace - time) <= 100) ? 'passed' : 'failed',
-			str = 'Condition Checks:\n1: ' + cond1 + ', 2: ' + cond2 + ', 3: ' + cond3 + ', 4: ' + cond4 +
+			cond4 = (Math.abs(cycles * pace - time) <= 100) ? 'pass' : 'fail',
+			// 5: Calculated time should not be over target time
+			cond5 = (cycles * pace <= time) ? 'pass' : 'fail',
+			
+			str = 'Condition Checks:\n1: ' + cond1 + ', 2: ' + cond2 +
+				', 3: ' + cond3 + ', 4: ' + cond4 + ', 5: ' + cond5 +
 				'\n----\n   Pace: ' + pace +
 				'\n   Cycles: ' + cycles +
 				'\n   Calculated Inc: ' + (diff / cycles) +
