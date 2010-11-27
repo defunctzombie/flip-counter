@@ -18,7 +18,7 @@ var flipCounter = function(d, options){
 		inc: 1,
 		pace: 1000,
 		auto: true,
-		debug: true
+		debug: false //Uses console.log, so don't enable unless your browser supports it.
 	};
 	
 	var o = options || {},
@@ -185,7 +185,7 @@ var flipCounter = function(d, options){
 		
 		if (diff > 0){
 			while ((diff / cycles < 1 || cycles * inc > diff || Math.abs(cycles * inc - diff) > 5 ||
-					Math.abs(cycles * pace - time) > 100 || cycles * pace > time) && i < 100){				
+					Math.abs(cycles * pace - time) > 100 || cycles * pace > time) && i < 500){				
 				
 				pace += 10;
 				cycles = Math.floor(time / pace);
@@ -219,7 +219,7 @@ var flipCounter = function(d, options){
 				o.pace = pace;
 			}
 			
-			doIncrement(n);
+			doIncrement(n, true, cycles);
 		}
 		
 		function checkLog(diff, cycles, inc, pace, time){
@@ -274,19 +274,25 @@ var flipCounter = function(d, options){
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
 	}
 	
-	function doIncrement(n){
-		var val = o.value;
+	function doIncrement(n, s, c){
+		var val = o.value,
+		smart = (typeof s == 'undefined') ? false : s,
+		cycles = (typeof c == 'undefined') ? 1 : c;
+		
+		if (smart === true) cycles--;
+		
 		if (val != n){
 			x = o.value.toString(),
 			o.auto = true;
 
-			if (val + o.inc <= n) val += o.inc
+			if (val + o.inc <= n && cycles != 0) val += o.inc
 			else val = n;
 			
 			o.value = val;
 			y = o.value.toString();
+			
 			digitCheck(x,y);
-			nextCount = setTimeout(function(){doIncrement(n)}, o.pace);
+			nextCount = setTimeout(function(){doIncrement(n, smart, cycles)}, o.pace);
 		}
 		else o.auto = false;
 	}
