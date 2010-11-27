@@ -155,10 +155,12 @@ var flipCounter = function(d, options){
 	 *   Time duration in seconds
 	 */
 	this.smartIncrementTo = function(n, p, t){
+		if (nextCount) clearNext();
+		
 		var time = isNumber(t) ? t * 1000 : 10000,
 		pace = isNumber(p) ? p : o.pace,
 		diff = isNumber(n) ? n - o.value : 0,
-		cycles, inc, q, nq, td, ntd,
+		cycles, inc, q, nq,
 		i = 0,
 		best = {
 			pace: 0,
@@ -169,8 +171,7 @@ var flipCounter = function(d, options){
 		pace = (time / diff > pace) ? Math.round((time / diff) / 10) * 10 : pace;
 		cycles = Math.floor(time / pace);
 		inc = Math.round(diff / cycles);
-		q = diff - (cycles * inc);
-		td = Math.abs(cycles * pace - time);
+		q = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
 		
 		if (o.debug){
 			console.log(
@@ -189,12 +190,10 @@ var flipCounter = function(d, options){
 				pace += 10;
 				cycles = Math.floor(time / pace);
 				inc = Math.round(diff / cycles);
-				nq = diff - (cycles * inc);
-				ntd = Math.abs(cycles * pace - time);
+				nq = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
 				
-				if (nq < q && ntd < td){
+				if (nq < q){
 					q = nq;
-					td = ntd;
 					best.pace = pace;
 					best.inc = inc;
 				}
@@ -220,7 +219,6 @@ var flipCounter = function(d, options){
 				o.pace = pace;
 			}
 			
-			if (nextCount) clearNext();
 			doIncrement(n);
 		}
 		
