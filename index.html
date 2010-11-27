@@ -29,7 +29,7 @@
 
 	<div class="explain">
 		<p>This counter was initialized with the following code:</p>
-		<code>var myCounter = new flipCounter('#counter', {value:10000, inc:123, pace:800, auto:true});</code>
+		<code>var myCounter = new flipCounter('counter', {value:10000, inc:123, pace:800, auto:true});</code>
 		<p>Use the controls below to make changes to the counter using built-in methods.</p>
 		<p><a class="back" href="http://cnanney.com/journal/code/apple-style-counter-revisited/">http://cnanney.com/journal/code/apple-style-counter-revisited/</a></p>
 	</div>
@@ -38,14 +38,14 @@
 
 	<div class="clear"></div>
 	<ul id="demo_controls">
-		<li>Increment: 
+		<li class="auto_on_controls">Increment: 
 			<span id="inc_value">123</span> <a href="#" class="expand">[?]</a><div id="inc_slider" class="demo_widget"></div>
 			<div class="explain toggle">
 				<p>This slider controls the counter increment by using the <b>setIncrement</b> method:</p>
 				<code>myCounter.setIncrement(value);</code>
 			</div>
 		</li>
-		<li>Pace: 
+		<li class="auto_on_controls">Pace: 
 			<span id="pace_value">800</span>ms <a href="#" class="expand">[?]</a><div id="pace_slider" class="demo_widget"></div>
 			<div class="explain toggle">
 				<p>This slider controls the counter pace by using the <b>setPace</b> method:</p>
@@ -53,7 +53,7 @@
 			</div>
 		</li>
 		<li>Auto-Increment: <a href="#" class="expand">[?]</a>
-			<div id="auto_toggle" class="demo_widget">
+			<div id="auto_toggle" class="demo_button">
 				<input type="radio" id="auto1" name="auto" value="on" checked="checked" /><label for="auto1">On</label>
 				<input type="radio" id="auto2" name="auto" value="off" /><label for="auto2">Off</label>
 				<button id="counter_step">Step</button>
@@ -65,8 +65,8 @@
 				<code>myCounter.step();</code>
 			</div>
 		</li>
-		<li id="math">Addition / Subtraction: <a href="#" class="expand">[?]</a>
-			<div id="add_sub" class="demo_widget">
+		<li class="auto_off_controls">Addition / Subtraction: <a href="#" class="expand">[?]</a>
+			<div id="add_sub" class="demo_button">
 				<button id="add">Add 567</button>
 				<button id="sub">Subtract 567</button>
 			</div>
@@ -76,13 +76,32 @@
 				<code>myCounter.subtract(567);</code>
 			</div>
 		</li>
-		<li id="set">Set Value: <a href="#" class="expand">[?]</a>
-			<div class="demo_widget">
+		<li class="auto_off_controls">Set Value: <a href="#" class="expand">[?]</a>
+			<div class="demo_button">
 				<button id="set_val">Set value of counter to 12,345</button>
 			</div>
 			<div class="explain toggle">
 				<p>You can manually set the value of the counter at any time using the <b>setValue</b> method:</p>
 				<code>myCounter.setValue(12345);</code>
+			</div>
+		</li>
+		<li class="auto_off_controls">Increment To: <a href="#" class="expand">[?]</a>
+			<div class="demo_button">
+				<button id="inc_to">Increment counter to 12,345</button>
+			</div>
+			<div class="explain toggle">
+				<p>You can set the counter to increment to a value using the current <i>pace</i> and <i>inc</i> values by using the <b>incrementTo</b> method:</p>
+				<code>myCounter.incrementTo(12345);</code>
+			</div>
+		</li>
+		<li class="auto_off_controls">Smart Increment To: <a href="#" class="expand">[?]</a>
+			<div class="demo_button">
+				<button id="smart">Run smart increment example</button>
+			</div>
+			<div class="explain toggle">
+				<p>You can let the counter figure out the best <i>pace</i> and <i>inc</i> values by using the <b>smartIncrementTo</b> method:</p>
+				<code>myCounter.smartIncrementTo(12345, 400, 10);</code>
+				<p>The above code would tell the counter to increment to 12,345,  preferably at an <i>inc</i> of 400, with a total duration of 10 seconds. Click the "Run smart increment example" button to see a demo of this method in which the counter will increment to 4 different values, each with a duration of 10 seconds, dynamically adjusting <i>pace</i> and <i>inc</i> for optimal results.</p>
 			</div>
 		</li>
 	</ul>
@@ -99,8 +118,10 @@
 		 * Demo controls
 		 */
 		
+		var smartInc = 0;
+		
 		// Increment
-		$( "#inc_slider" ).slider({
+		$("#inc_slider").slider({
 			range: "max",
 			value: 123,
 			min: 1,
@@ -112,7 +133,7 @@
 		});
 		
 		// Pace
-		$( "#pace_slider" ).slider({
+		$("#pace_slider").slider({
 			range: "max",
 			value: 800,
 			min: 100,
@@ -129,15 +150,20 @@
 		$("input[name=auto]").change(function(){
 			if ($("#auto1:checked").length == 1){
 				$("#counter_step").button({disabled: true});
-				$("#math, #set").hide();
+				$(".auto_off_controls").hide();
+				$(".auto_on_controls").show();
+				
+				myCounter.setPace($("#pace_slider").slider("value"));
+				myCounter.setIncrement($("#inc_slider").slider("value"));
 				myCounter.setAuto(true);
 			}
 			else{
 				$("#counter_step").button({disabled: false});
-				$("#math, #set").show();
+				$(".auto_off_controls").show();
+				$(".auto_on_controls").hide();
 				$("#add_sub").buttonset();
-				$("#set_val").button();
-				myCounter.setAuto(false);
+				$("#set_val, #inc_to, #smart").button();
+				myCounter.setAuto(false).stop();
 			}
 		});
 		$("#counter_step").button({disabled: true});
@@ -159,6 +185,27 @@
 		// Set value
 		$("#set_val").click(function(){
 			myCounter.setValue(12345);
+			return false;
+		});
+		
+		// Increment to
+		$("#inc_to").click(function(){
+			myCounter.incrementTo(12345);
+			return false;
+		});
+		
+		// Get value
+		$("#smart").click(function(){
+			var steps = [33345, 34000, 34003, 34500];
+
+			if (smartInc < 4) runTest();
+						
+			function runTest(){
+				myCounter.smartIncrementTo(steps[smartInc], 400, 10);
+				smartInc++;
+				if (smartInc < 4) setTimeout(runTest, 10000);
+			}
+			$(this).button("disable");
 			return false;
 		});
 		
