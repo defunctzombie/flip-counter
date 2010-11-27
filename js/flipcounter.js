@@ -17,7 +17,8 @@ var flipCounter = function(d, options){
 		value: 0,
 		inc: 1,
 		pace: 1000,
-		auto: true
+		auto: true,
+		debug: true
 	};
 	
 	var o = options || {},
@@ -144,7 +145,7 @@ var flipCounter = function(d, options){
 	}
 	
 	/**
-	 * Increments counter to given value, animating by current pace and increment.
+	 * Increments counter to given value, determining best pace and inc values.
 	 *
 	 * @param {int} n
 	 *   Number to increment to
@@ -157,29 +158,54 @@ var flipCounter = function(d, options){
 		var time = isNumber(t) ? t * 1000 : 10000,
 		pace = isNumber(p) ? p : o.pace,
 		diff = isNumber(n) ? n - o.value : 0,
-		cycles = Math.floor(time / pace),
-		inc = Math.round(diff / cycles),
-		q = diff - (cycles * inc),
+		cycles, inc, q, nq, td, ntd,
 		i = 0,
-		nq, best = {
+		best = {
 			pace: 0,
 			inc: 0
 		};
 		
+		// Initial best guess
+		pace = (time / diff > pace) ? Math.round((time / diff) / 10) * 10 : pace;
+		cycles = Math.floor(time / pace);
+		inc = Math.round(diff / cycles);
+		q = diff - (cycles * inc);
+		td = Math.abs(cycles * pace - time);
+		
+		if (o.debug){
+			console.log(
+				'***************************************************************\n' + 
+				'START: ' + o.value +
+				'\nEND: ' + n + '\n' +
+				checkLog(diff, cycles, inc, pace, time)
+			);
+		}
+		
+		
 		if (diff > 0){
 			while ((diff / cycles < 1 || cycles * inc > diff || Math.abs(cycles * inc - diff) > 5 ||
-					Math.abs(cycles * pace - time) > 100) && i < 100){
-				pace += 50;
+					Math.abs(cycles * pace - time) > 100) && i < 100){				
+				
+				pace += 10;
 				cycles = Math.floor(time / pace);
 				inc = Math.round(diff / cycles);
 				nq = diff - (cycles * inc);
+				ntd = Math.abs(cycles * pace - time);
 				
-				if (nq < q){
+				if (nq < q && ntd < td){
 					q = nq;
+					td = ntd;
 					best.pace = pace;
 					best.inc = inc;
 				}
-
+				
+				if (o.debug){
+					console.log(
+						'ADJUSTMENT: ' + (i + 1) + '\n' +
+						checkLog(diff, cycles, inc, pace, time)
+					);
+				}
+				
 				i++;
 			}
 			
@@ -198,9 +224,27 @@ var flipCounter = function(d, options){
 			doIncrement(n);
 		}
 		
-		// Left in from debugging
-		function doLog(){
-			console.log('Pace: ' + pace + '\nCycles: ' + cycles + '\nInc: ' + inc + '\n\nDiff: ' + diff + '\nCalc: ' + cycles*inc);
+		function checkLog(diff, cycles, inc, pace, time){
+			// Test conditions, all must pass to continue:
+			// 1: Unrounded inc value needs to be at least 1
+			var cond1 = (diff / cycles >= 1) ? 'passed' : 'failed',
+			// 2: Don't want to overshoot the target number
+			cond2 = (cycles * inc <= diff) ? 'passed' : 'failed',
+			// 3: Want to be within 5 of the target number
+			cond3 = (Math.abs(cycles * inc - diff) <= 5) ? 'passed' : 'failed',
+			// 4: Total time should be within 100ms of target time.
+			//    Not checking if it goes over, because old timeouts clear when method is called.
+			cond4 = (Math.abs(cycles * pace - time) <= 100) ? 'passed' : 'failed',
+			str = 'Condition Checks:\n1: ' + cond1 + ', 2: ' + cond2 + ', 3: ' + cond3 + ', 4: ' + cond4 +
+				'\n----\n   Pace: ' + pace +
+				'\n   Cycles: ' + cycles +
+				'\n   Calculated Inc: ' + (diff / cycles) +
+				'\n   Rounded Inc: ' + inc +
+				'\n   Calculated time: ' + Math.abs(cycles * pace) +
+				'\n   Target time: ' + time +
+				'\n   ACTUAL END VALUE: ' + (cycles*inc+o.value);
+			
+			return str;
 		}
 	}
 	
@@ -216,6 +260,7 @@ var flipCounter = function(d, options){
 	 */
 	this.stop = function(){
 		if (nextCount) clearNext();
+		return this;
 	}
 	
 	//---------------------------------------------------------------------------//
