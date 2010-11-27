@@ -346,14 +346,14 @@ var flipCounter = function(d, options){
 		speed = (speed > 80) ? 80 : speed;
 		
 		// Do animation
-		$(div + " #d" + n + " li.t")
+		jQuery(div + " #d" + n + " li.t")
 		// Top old digit postion 2
 		.delay(speed).animate({'background-position': '-' + frameWidth + 'px -' + (oldDigit * tFrameHeight) + 'px'}, 0)
 			// Top old digit position 3
 			.delay(speed).animate({'background-position': (frameWidth * -2) + 'px -' + (oldDigit * tFrameHeight) + 'px'}, 0)
 			// Top new digit position 1
 			.delay(speed).animate({'background-position': '0 -' + (newDigit * tFrameHeight) + 'px'}, 0, function(){
-				$(div + " #d" + n + " li.b")
+				jQuery(div + " #d" + n + " li.b")
 					// Bottom old digit position 2
 					.animate({'background-position': '-' + frameWidth + 'px -' + (oldDigit * bFrameHeight) + 'px'}, 0)
 					// Bottom old digit position 3
@@ -379,17 +379,17 @@ var flipCounter = function(d, options){
 	// Adds new digit
 	function addDigit(len, digit){
 		var li = Number(len) - 1;
-		if (li % 3 == 0) $(div).prepend('<ul class="cd"><li class="s"></li></ul>');
-		$(div).prepend('<ul class="cd" id="d' + li + '"><li class="t"></li><li class="b"></li></ul>');
-		$(div + " #d" + li + " li.t").css({'background-position': '0 -' + (digit * tFrameHeight) + 'px'});
-		$(div + " #d" + li + " li.b").css({'background-position': '0 -' + (digit * bFrameHeight) + 'px'});
+		if (li % 3 == 0) jQuery(div).prepend('<ul class="cd"><li class="s"></li></ul>');
+		jQuery(div).prepend('<ul class="cd" id="d' + li + '"><li class="t"></li><li class="b"></li></ul>');
+		jQuery(div + " #d" + li + " li.t").css({'background-position': '0 -' + (digit * tFrameHeight) + 'px'});
+		jQuery(div + " #d" + li + " li.b").css({'background-position': '0 -' + (digit * bFrameHeight) + 'px'});
 	}
 	
 	// Removes digit
 	function removeDigit(id){
-		$(div + " #d" + id).remove();
+		jQuery(div + " #d" + id).remove();
 		// Check for leading comma
-		var first = $(div + " li").first();
+		var first = jQuery(div + " li").first();
 		if (first.hasClass("s")) first.parent("ul").remove();
 	}
 
@@ -399,15 +399,15 @@ var flipCounter = function(d, options){
 		var count = initial.toString().length;
 		var bit = 1;
 		for (var i = 0; i < count; i++){
-			$(div).prepend('<ul class="cd" id="d' + i + '"><li class="t"></li><li class="b"></li></ul>');
-			if (bit != (count) && bit % 3 == 0) $(div).prepend('<ul class="cd"><li class="s"></li></ul>');
+			jQuery(div).prepend('<ul class="cd" id="d' + i + '"><li class="t"></li><li class="b"></li></ul>');
+			if (bit != (count) && bit % 3 == 0) jQuery(div).prepend('<ul class="cd"><li class="s"></li></ul>');
 			bit++;
 		}
 		// Sets them to the right number
 		var digits = splitToArray(initial.toString());
 		for (var i = 0; i < count; i++){
-			$(div + " #d" + i + " li.t").css({'background-position': '0 -' + (digits[i] * tFrameHeight) + 'px'});
-			$(div + " #d" + i + " li.b").css({'background-position': '0 -' + (digits[i] * bFrameHeight) + 'px'});
+			jQuery(div + " #d" + i + " li.t").css({'background-position': '0 -' + (digits[i] * tFrameHeight) + 'px'});
+			jQuery(div + " #d" + i + " li.b").css({'background-position': '0 -' + (digits[i] * bFrameHeight) + 'px'});
 		}
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
