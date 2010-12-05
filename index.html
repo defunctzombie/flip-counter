@@ -199,10 +199,10 @@
 			var steps = [12345, 17, 4, 533];
 
 			if (smartInc < 4) runTest();
-						
+			
 			function runTest(){
 				var newVal = myCounter.getValue() + steps[smartInc];
-				myCounter.smartIncrementTo(newVal, 400, 10);
+				myCounter.incrementTo(newVal, 10, 400);
 				smartInc++;
 				if (smartInc < 4) setTimeout(runTest, 10000);
 			}
