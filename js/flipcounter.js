@@ -138,115 +138,84 @@ var flipCounter = function(d, options){
 	 *
 	 * @param {int} n
 	 *   Number to increment to
+	 * @param {int} t (optional)
+	 *   Time duration in seconds - makes increment a 'smart' increment
+	 * @param {int} p (optional)
+	 *   Desired pace for counter if 'smart' increment
 	 */
-	this.incrementTo = function(n){
-		if (nextCount) clearNext();
-		doIncrement(n);
-	}
-	
-	/**
-	 * Increments counter to given value, determining best pace and inc values.
-	 *
-	 * @param {int} n
-	 *   Number to increment to
-	 * @param {int} p
-	 *   Desired pace, if possible
-	 * @param {int} t
-	 *   Time duration in seconds
-	 */
-	this.smartIncrementTo = function(n, p, t){
+	this.incrementTo = function(n, t, p){
 		if (nextCount) clearNext();
 		
-		var time = isNumber(t) ? t * 1000 : 10000,
-		pace = isNumber(p) ? p : o.pace,
-		diff = isNumber(n) ? n - o.value : 0,
-		cycles, inc, q, nq,
-		i = 0,
-		best = {
-			pace: 0,
-			inc: 0
-		};
-		
-		// Initial best guess
-		pace = (time / diff > pace) ? Math.round((time / diff) / 10) * 10 : pace;
-		cycles = Math.floor(time / pace);
-		inc = Math.round(diff / cycles);
-		q = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
-		
-		if (o.debug){
-			console.log(
-				'***************************************************************\n' + 
-				'START: ' + o.value +
-				'\nEND: ' + n + '\n' +
-				checkLog(diff, cycles, inc, pace, time)
-			);
-		}
-		
-		
-		if (diff > 0){
-			while ((diff / cycles < 1 || cycles * inc > diff || Math.abs(cycles * inc - diff) > 5 ||
-					Math.abs(cycles * pace - time) > 100 || cycles * pace > time) && i < 500){				
-				
-				pace += 10;
-				cycles = Math.floor(time / pace);
-				inc = Math.round(diff / cycles);
-				nq = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
-				
-				if (nq < q){
-					q = nq;
-					best.pace = pace;
-					best.inc = inc;
+		// Smart increment
+		if (typeof t != 'undefined'){
+			var time = isNumber(t) ? t * 1000 : 10000,
+			pace = typeof p != 'undefined' && isNumber(p) ? p : o.pace,
+			diff = typeof n != 'undefined' && isNumber(n) ? n - o.value : 0,
+			cycles, inc, q, nq, check,
+			i = 0,
+			best = {
+				pace: 0,
+				inc: 0
+			};
+			
+			// Initial best guess
+			pace = (time / diff > pace) ? Math.round((time / diff) / 10) * 10 : pace;
+			cycles = Math.floor(time / pace);
+			inc = Math.round(diff / cycles);
+			q = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
+			
+			check = checkSmartValues(diff, cycles, inc, pace, time);
+			
+			if (o.debug){
+				console.log(
+					'***************************************************************\n' + 
+					'START: ' + o.value + '\nEND: ' + n + '\n' + check.str
+				);
+			}
+			
+			if (diff > 0){
+				while (check.result === false && i < 100){				
+					pace += 10;
+					cycles = Math.floor(time / pace);
+					inc = Math.round(diff / cycles);
+					nq = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
+					
+					check = checkSmartValues(diff, cycles, inc, pace, time);
+					
+					if (nq < q){
+						q = nq;
+						best.pace = pace;
+						best.inc = inc;
+					}
+					
+					if (o.debug){
+						console.log('ADJUSTMENT: ' + (i + 1) + '\n' + check.str);
+					}
+					
+					i++;
 				}
 				
-				if (o.debug){
-					console.log(
-						'ADJUSTMENT: ' + (i + 1) + '\n' +
-						checkLog(diff, cycles, inc, pace, time)
-					);
+				if (i == 100){
+					// Could not find optimal settings, use best found so far
+					o.inc = best.inc;
+					o.pace = best.pace;
+				}
+				else{
+					// Optimal settings found, use those
+					o.inc = inc;
+					o.pace = pace;
 				}
 				
-				i++;
+				doIncrement(n, true, cycles);
 			}
-			
-			if (i == 100){
-				// Could not find optimal settings, use best found so far
-				o.inc = best.inc;
-				o.pace = best.pace;
-			}
-			else{
-				// Optimal settings found, use those
-				o.inc = inc;
-				o.pace = pace;
-			}
-			
-			doIncrement(n, true, cycles);
+		
+		}
+		// Regular increment
+		else{
+			doIncrement(n);
 		}
 		
-		function checkLog(diff, cycles, inc, pace, time){
-			// Test conditions, all must pass to continue:
-			// 1: Unrounded inc value needs to be at least 1
-			var cond1 = (diff / cycles >= 1) ? 'pass' : 'fail',
-			// 2: Don't want to overshoot the target number
-			cond2 = (cycles * inc <= diff) ? 'pass' : 'fail',
-			// 3: Want to be within 5 of the target number
-			cond3 = (Math.abs(cycles * inc - diff) <= 5) ? 'pass' : 'fail',
-			// 4: Total time should be within 100ms of target time.
-			cond4 = (Math.abs(cycles * pace - time) <= 100) ? 'pass' : 'fail',
-			// 5: Calculated time should not be over target time
-			cond5 = (cycles * pace <= time) ? 'pass' : 'fail',
-			
-			str = 'Condition Checks:\n1: ' + cond1 + ', 2: ' + cond2 +
-				', 3: ' + cond3 + ', 4: ' + cond4 + ', 5: ' + cond5 +
-				'\n----\n   Pace: ' + pace +
-				'\n   Cycles: ' + cycles +
-				'\n   Calculated Inc: ' + (diff / cycles) +
-				'\n   Rounded Inc: ' + inc +
-				'\n   Calculated time: ' + Math.abs(cycles * pace) +
-				'\n   Target time: ' + time +
-				'\n   ACTUAL END VALUE: ' + (cycles*inc+o.value);
-			
-			return str;
-		}
+		
 	}
 	
 	/**
@@ -417,6 +386,44 @@ var flipCounter = function(d, options){
 		}
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
+	}
+	
+	// Checks values for smart increment and creates debug text
+	function checkSmartValues(diff, cycles, inc, pace, time){
+		var r = {result: true};
+		// Test conditions, all must pass to continue:
+		// 1: Unrounded inc value needs to be at least 1
+		r.cond1 = (diff / cycles >= 1) ? true : false;
+		// 2: Don't want to overshoot the target number
+		r.cond2 = (cycles * inc <= diff) ? true : false;
+		// 3: Want to be within 5 of the target number
+		r.cond3 = (Math.abs(cycles * inc - diff) <= 5) ? true : false;
+		// 4: Total time should be within 100ms of target time.
+		r.cond4 = (Math.abs(cycles * pace - time) <= 100) ? true : false;
+		// 5: Calculated time should not be over target time
+		r.cond5 = (cycles * pace <= time) ? true : false;
+		
+		r.str = 'Condition Checks:\n';
+		for (var i = 1; i <= 5; i++){
+			r.str += i + ': ';
+			if (r['cond' + i] === true){
+				r.str += 'PASS';
+			}
+			else{
+				r.str += 'FAIL';
+				r.result = false;
+			}
+			r.str += i < 5 ? ', ' : '';
+		}
+		r.str += '\n----\n   Pace: ' + pace +
+			'\n   Cycles: ' + cycles +
+			'\n   Calculated Inc: ' + (diff / cycles) +
+			'\n   Rounded Inc: ' + inc +
+			'\n   Calculated time: ' + Math.abs(cycles * pace) +
+			'\n   Target time: ' + time +
+			'\n   ACTUAL END VALUE: ' + (cycles*inc+o.value);
+		
+		return r;
 	}
 	
 	// http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric/1830844
