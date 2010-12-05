@@ -166,6 +166,7 @@ var flipCounter = function(d, options){
 			
 			check = checkSmartValues(diff, cycles, inc, pace, time);
 			
+			// REMOVE IN MINIFIED
 			if (o.debug){
 				console.log(
 					'***************************************************************\n' + 
@@ -188,6 +189,7 @@ var flipCounter = function(d, options){
 						best.inc = inc;
 					}
 					
+					// REMOVE IN MINIFIED
 					if (o.debug){
 						console.log('ADJUSTMENT: ' + (i + 1) + '\n' + check.str);
 					}
@@ -406,15 +408,17 @@ var flipCounter = function(d, options){
 		r.str = 'Condition Checks:\n';
 		for (var i = 1; i <= 5; i++){
 			r.str += i + ': ';
-			if (r['cond' + i] === true){
-				r.str += 'PASS';
-			}
-			else{
+			if (r['cond' + i] === false){
 				r.str += 'FAIL';
 				r.result = false;
 			}
+			else{
+				r.str += 'PASS';
+			}
 			r.str += i < 5 ? ', ' : '';
 		}
+		
+		// REMOVE IN MINIFIED
 		r.str += '\n----\n   Pace: ' + pace +
 			'\n   Cycles: ' + cycles +
 			'\n   Calculated Inc: ' + (diff / cycles) +
