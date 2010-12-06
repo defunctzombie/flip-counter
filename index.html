@@ -99,9 +99,10 @@
 				<button id="smart">Run smart increment example</button>
 			</div>
 			<div class="explain toggle">
-				<p>You can let the counter figure out the best <i>pace</i> and <i>inc</i> values by using the <b>smartIncrementTo</b> method:</p>
-				<code>myCounter.smartIncrementTo(12345, 400, 10);</code>
-				<p>The above code would tell the counter to increment to 12345,  preferably at an <i>inc</i> of 400, with a total duration of 10 seconds. Click the "Run smart increment example" button to see a demo of this method in which the counter will increment to 4 different values, each with a duration of 10 seconds, dynamically adjusting <i>pace</i> and <i>inc</i> for optimal results.</p>
+				<p>You can also let the counter figure out the best <i>pace</i> and <i>inc</i> values using a "smart" increment technique.</p>
+				<code>myCounter.incrementTo(12345, 10, 400);</code>
+				<p>The above code would tell the counter to increment to 12,345 over a period of 10 seconds. I've also set a desired pace of 400 for the animation, but that will change when neccessary to optimize the animation.</p>
+				<p>Click the "Run smart increment example" button to see a demo of this method in which the counter will increment to 4 different values, each with a duration of 10 seconds, dynamically adjusting <i>pace</i> and <i>inc</i> for optimal results.</p>
 			</div>
 		</li>
 	</ul>
