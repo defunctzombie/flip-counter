@@ -9,6 +9,7 @@
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  */
+
 var flipCounter = function(d, options){
 
 	// Default values
@@ -324,20 +325,20 @@ var flipCounter = function(d, options){
 		// Do animation
 		jQuery(div + " #d" + n + " li.t")
 		// Top old digit postion 2
-		.delay(speed).animate({'backgroundPositionX': -frameWidth, 'backgroundPositionY': -oldDigit * tFrameHeight}, 0)
+		.delay(speed).animate({'background-position': '-' + frameWidth + 'px -' + (oldDigit * tFrameHeight) + 'px'}, 0)
 			// Top old digit position 3
-			.delay(speed).animate({'backgroundPositionX': frameWidth * -2, 'backgroundPositionY': -oldDigit * tFrameHeight}, 0)
+			.delay(speed).animate({'background-position': (frameWidth * -2) + 'px -' + (oldDigit * tFrameHeight) + 'px'}, 0)
 			// Top new digit position 1
-			.delay(speed).animate({'backgroundPositionX': 0, 'backgroundPositionY': -newDigit * tFrameHeight}, 0, function(){
+			.delay(speed).animate({'background-position': '0 -' + (newDigit * tFrameHeight) + 'px'}, 0, function(){
 				jQuery(div + " #d" + n + " li.b")
 					// Bottom old digit position 2
-					.animate({'backgroundPositionX': -frameWidth, 'backgroundPositionY': -oldDigit * bFrameHeight}, 0)
+					.animate({'background-position': '-' + frameWidth + 'px -' + (oldDigit * bFrameHeight) + 'px'}, 0)
 					// Bottom old digit position 3
-					.delay(speed).animate({'backgroundPositionX': frameWidth * -2, 'backgroundPositionY': -newDigit * bFrameHeight}, 0)
+					.delay(speed).animate({'background-position': (frameWidth * -2) + 'px -' + (newDigit * bFrameHeight) + 'px'}, 0)
 					// Bottom old digit position 4
-					.delay(speed).animate({'backgroundPositionX': frameWidth * -3, 'backgroundPositionY': -newDigit * bFrameHeight}, 0)
+					.delay(speed).animate({'background-position': (frameWidth * -3) + 'px -' + (newDigit * bFrameHeight) + 'px'}, 0)
 					// Bottom new digit position 1
-					.delay(speed).animate({'backgroundPositionX': 0, 'backgroundPositionY': -newDigit * bFrameHeight}, 0);
+					.delay(speed).animate({'background-position': '0 -' + (newDigit * bFrameHeight) + 'px'}, 0);
 			});
 	}
 	
