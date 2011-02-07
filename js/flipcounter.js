@@ -9,7 +9,7 @@
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  */
-
+ 
 var flipCounter = function(d, options){
 
 	// Default values
@@ -166,13 +166,15 @@ var flipCounter = function(d, options){
 			
 			check = checkSmartValues(diff, cycles, inc, pace, time);
 			
-			// REMOVE IN MINIFIED
+			// DEBUGGING
+			/*
 			if (o.debug){
 				console.log(
 					'***************************************************************\n' + 
 					'START: ' + o.value + '\nEND: ' + n + '\n' + check.str
 				);
 			}
+			*/
 			
 			if (diff > 0){
 				while (check.result === false && i < 100){				
@@ -189,10 +191,12 @@ var flipCounter = function(d, options){
 						best.inc = inc;
 					}
 					
-					// REMOVE IN MINIFIED
+					// DEBUGGING
+					/*
 					if (o.debug){
 						console.log('ADJUSTMENT: ' + (i + 1) + '\n' + check.str);
 					}
+					*/
 					
 					i++;
 				}
@@ -296,7 +300,17 @@ var flipCounter = function(d, options){
 	}
 	
 	function animateDigit(n, oldDigit, newDigit){
-		var speed;
+		var speed, step = 0, w,
+		bp = [
+			'-' + frameWidth + 'px -' + (oldDigit * tFrameHeight) + 'px',
+			(frameWidth * -2) + 'px -' + (oldDigit * tFrameHeight) + 'px',
+			'0 -' + (newDigit * tFrameHeight) + 'px',
+			'-' + frameWidth + 'px -' + (oldDigit * bFrameHeight) + 'px',
+			(frameWidth * -2) + 'px -' + (newDigit * bFrameHeight) + 'px',
+			(frameWidth * -3) + 'px -' + (newDigit * bFrameHeight) + 'px',
+			'0 -' + (newDigit * bFrameHeight) + 'px'
+		];
+
 		if (o.auto === true && o.pace <= 300){
 			switch (n){
 				case 0:
@@ -322,24 +336,17 @@ var flipCounter = function(d, options){
 		// Cap on slowest animation can go
 		speed = (speed > 80) ? 80 : speed;
 		
-		// Do animation
-		jQuery(div + " #d" + n + " li.t")
-		// Top old digit postion 2
-		.delay(speed).animate({'background-position': '-' + frameWidth + 'px -' + (oldDigit * tFrameHeight) + 'px'}, 0)
-			// Top old digit position 3
-			.delay(speed).animate({'background-position': (frameWidth * -2) + 'px -' + (oldDigit * tFrameHeight) + 'px'}, 0)
-			// Top new digit position 1
-			.delay(speed).animate({'background-position': '0 -' + (newDigit * tFrameHeight) + 'px'}, 0, function(){
-				jQuery(div + " #d" + n + " li.b")
-					// Bottom old digit position 2
-					.animate({'background-position': '-' + frameWidth + 'px -' + (oldDigit * bFrameHeight) + 'px'}, 0)
-					// Bottom old digit position 3
-					.delay(speed).animate({'background-position': (frameWidth * -2) + 'px -' + (newDigit * bFrameHeight) + 'px'}, 0)
-					// Bottom old digit position 4
-					.delay(speed).animate({'background-position': (frameWidth * -3) + 'px -' + (newDigit * bFrameHeight) + 'px'}, 0)
-					// Bottom new digit position 1
-					.delay(speed).animate({'background-position': '0 -' + (newDigit * bFrameHeight) + 'px'}, 0);
-			});
+		function animate(){
+			if (step < 7){
+				w = step < 3 ? 't' : 'b';
+				jQuery(div + " #d" + n + " li." + w).css("background-position", bp[step]);
+				step++;
+				if (step != 3) setTimeout(animate, speed);
+				else animate();
+			}
+		}
+		
+		animate();
 	}
 	
 	// Creates array of digits for easier manipulation
@@ -405,20 +412,24 @@ var flipCounter = function(d, options){
 		// 5: Calculated time should not be over target time
 		r.cond5 = (cycles * pace <= time) ? true : false;
 		
-		r.str = 'Condition Checks:\n';
+		// DEBUGGING
+		//r.str = 'Condition Checks:\n';
 		for (var i = 1; i <= 5; i++){
-			r.str += i + ': ';
+			//r.str += i + ': ';
 			if (r['cond' + i] === false){
-				r.str += 'FAIL';
+				//r.str += 'FAIL';
 				r.result = false;
 			}
+			/*
 			else{
 				r.str += 'PASS';
 			}
 			r.str += i < 5 ? ', ' : '';
+			*/
 		}
 		
-		// REMOVE IN MINIFIED
+		// DEBUGGING
+		/*
 		r.str += '\n----\n   Pace: ' + pace +
 			'\n   Cycles: ' + cycles +
 			'\n   Calculated Inc: ' + (diff / cycles) +
@@ -426,7 +437,7 @@ var flipCounter = function(d, options){
 			'\n   Calculated time: ' + Math.abs(cycles * pace) +
 			'\n   Target time: ' + time +
 			'\n   ACTUAL END VALUE: ' + (cycles*inc+o.value);
-		
+		*/
 		return r;
 	}
 	
