@@ -29,7 +29,12 @@ var flipCounter = function(d, options){
 	var tFrameHeight = 39,
 	bFrameHeight = 64,
 	frameWidth = 53,
-	digitsOld = [], digitsNew = [], subStart, subEnd, x, y, nextCount = null;
+	digitsOld = [], digitsNew = [], subStart, subEnd, x, y, nextCount = null,
+	best = {
+		q: null,
+		pace: 0,
+		inc: 0
+	};
 	
 	/**
 	 * Sets the value of the counter and animates the digits to new value.
@@ -151,52 +156,38 @@ var flipCounter = function(d, options){
 			var time = isNumber(t) ? t * 1000 : 10000,
 			pace = typeof p != 'undefined' && isNumber(p) ? p : o.pace,
 			diff = typeof n != 'undefined' && isNumber(n) ? n - o.value : 0,
-			cycles, inc, q, nq, check,
-			i = 0,
-			best = {
-				pace: 0,
-				inc: 0
-			};
+			cycles, inc, check, i = 0;
+			best.q = null;
 			
 			// Initial best guess
 			pace = (time / diff > pace) ? Math.round((time / diff) / 10) * 10 : pace;
 			cycles = Math.floor(time / pace);
-			inc = Math.round(diff / cycles);
-			q = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
+			inc = Math.floor(diff / cycles);
 			
 			check = checkSmartValues(diff, cycles, inc, pace, time);
 			
 			// DEBUGGING
-			/*
-			if (o.debug){
-				console.log(
-					'***************************************************************\n' + 
-					'START: ' + o.value + '\nEND: ' + n + '\n' + check.str
-				);
-			}
-			*/
+			
+//			if (o.debug){
+//				console.log(
+//					'***************************************************************\n' +
+//					'START: ' + o.value + '\nEND: ' + n + '\n' + check.str
+//				);
+//			}
 			
 			if (diff > 0){
 				while (check.result === false && i < 100){				
 					pace += 10;
 					cycles = Math.floor(time / pace);
-					inc = Math.round(diff / cycles);
-					nq = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
+					inc = Math.floor(diff / cycles);
 					
 					check = checkSmartValues(diff, cycles, inc, pace, time);
 					
-					if (nq < q){
-						q = nq;
-						best.pace = pace;
-						best.inc = inc;
-					}
-					
 					// DEBUGGING
-					/*
-					if (o.debug){
-						console.log('ADJUSTMENT: ' + (i + 1) + '\n' + check.str);
-					}
-					*/
+					
+//					if (o.debug){
+//						console.log('ADJUSTMENT: ' + (i + 1) + '\n' + check.str);
+//					}
 					
 					i++;
 				}
@@ -220,7 +211,6 @@ var flipCounter = function(d, options){
 		else{
 			doIncrement(n);
 		}
-		
 		
 	}
 	
@@ -273,21 +263,22 @@ var flipCounter = function(d, options){
 	}
 	
 	function digitCheck(x,y){
+		var diff, adder;
 		digitsOld = splitToArray(x);
 		digitsNew = splitToArray(y);
 		if (y.length > x.length){
-			var diff = y.length - x.length;
+			diff = y.length - x.length;
 			while (diff > 0){
-				var adder = 1;
+				adder = 1;
 				addDigit(y.length - diff + 1, digitsNew[y.length - diff]);
 				adder++;
 				diff--;
 			}
 		}
 		if (y.length < x.length){
-			var diff = x.length - y.length;
+			diff = x.length - y.length;
 			while (diff > 0){
-				var adder = 1;
+				adder = 1;
 				removeDigit(x.length - diff);
 				diff--;
 			}
@@ -326,7 +317,7 @@ var flipCounter = function(d, options){
 					speed = o.pace/3;
 					break;
 				default:
-					speed = o.pace/2;
+					speed = o.pace/1.5;
 					break;
 			}
 		}
@@ -380,16 +371,16 @@ var flipCounter = function(d, options){
 	// Sets the correct digits on load
 	function initialDigitCheck(initial){
 		// Creates the right number of digits
-		var count = initial.toString().length;
-		var bit = 1;
-		for (var i = 0; i < count; i++){
+		var count = initial.toString().length,
+		bit = 1, i;
+		for (i = 0; i < count; i++){
 			jQuery(div).prepend('<ul class="cd" id="d' + i + '"><li class="t"></li><li class="b"></li></ul>');
 			if (bit != (count) && bit % 3 == 0) jQuery(div).prepend('<ul class="cd"><li class="s"></li></ul>');
 			bit++;
 		}
 		// Sets them to the right number
 		var digits = splitToArray(initial.toString());
-		for (var i = 0; i < count; i++){
+		for (i = 0; i < count; i++){
 			jQuery(div + " #d" + i + " li.t").css({'background-position': '0 -' + (digits[i] * tFrameHeight) + 'px'});
 			jQuery(div + " #d" + i + " li.b").css({'background-position': '0 -' + (digits[i] * bFrameHeight) + 'px'});
 		}
@@ -399,18 +390,28 @@ var flipCounter = function(d, options){
 	
 	// Checks values for smart increment and creates debug text
 	function checkSmartValues(diff, cycles, inc, pace, time){
-		var r = {result: true};
+		var r = {result: true}, q;
 		// Test conditions, all must pass to continue:
 		// 1: Unrounded inc value needs to be at least 1
 		r.cond1 = (diff / cycles >= 1) ? true : false;
 		// 2: Don't want to overshoot the target number
 		r.cond2 = (cycles * inc <= diff) ? true : false;
-		// 3: Want to be within 5 of the target number
-		r.cond3 = (Math.abs(cycles * inc - diff) <= 5) ? true : false;
+		// 3: Want to be within 10 of the target number
+		r.cond3 = (Math.abs(cycles * inc - diff) <= 10) ? true : false;
 		// 4: Total time should be within 100ms of target time.
 		r.cond4 = (Math.abs(cycles * pace - time) <= 100) ? true : false;
 		// 5: Calculated time should not be over target time
 		r.cond5 = (cycles * pace <= time) ? true : false;
+		
+		// Keep track of 'good enough' values in case can't find best one within 100 loops
+		if (r.cond1 && r.cond2 && r.cond4 && r.cond5){
+			q = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
+			if (best.q === null) best.q = q;
+			if (q <= best.q){
+				best.pace = pace;
+				best.inc = inc;
+			}
+		}
 		
 		// DEBUGGING
 		//r.str = 'Condition Checks:\n';
@@ -420,24 +421,25 @@ var flipCounter = function(d, options){
 				//r.str += 'FAIL';
 				r.result = false;
 			}
-			/*
-			else{
-				r.str += 'PASS';
-			}
-			r.str += i < 5 ? ', ' : '';
-			*/
+			
+//			else{
+//				r.str += 'PASS';
+//			}
+//			r.str += i < 5 ? ', ' : '';
+			
 		}
 		
 		// DEBUGGING
-		/*
-		r.str += '\n----\n   Pace: ' + pace +
-			'\n   Cycles: ' + cycles +
-			'\n   Calculated Inc: ' + (diff / cycles) +
-			'\n   Rounded Inc: ' + inc +
-			'\n   Calculated time: ' + Math.abs(cycles * pace) +
-			'\n   Target time: ' + time +
-			'\n   ACTUAL END VALUE: ' + (cycles*inc+o.value);
-		*/
+		
+//		r.str += '\n----\n   Pace: ' + pace +
+//			'\n   Diff: ' + diff +
+//			'\n   Cycles: ' + cycles +
+//			'\n   Calculated Inc: ' + (diff / cycles) +
+//			'\n   Rounded Inc: ' + inc +
+//			'\n   Calculated time: ' + Math.abs(cycles * pace) +
+//			'\n   Target time: ' + time +
+//			'\n   ACTUAL END VALUE: ' + (cycles*inc+o.value);
+		
 		return r;
 	}
 	
