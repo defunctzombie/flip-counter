@@ -21,7 +21,8 @@ var flipCounter = function(d, options){
 		auto: true,
 		tFH: 39,
 		bFH: 64,
-		fW: 53
+		fW: 53,
+		idPre: 'counter'
 	};
 	
 	var o = options || {},
@@ -278,7 +279,7 @@ var flipCounter = function(d, options){
 	}
 	
 	function animateDigit(n, oldDigit, newDigit){
-		var speed, step = 0, w,
+		var speed, step = 0, w, a,
 		bp = [
 			'-' + o.fW + 'px -' + (oldDigit * o.tFH) + 'px',
 			(o.fW * -2) + 'px -' + (oldDigit * o.tFH) + 'px',
@@ -317,7 +318,8 @@ var flipCounter = function(d, options){
 		function animate(){
 			if (step < 7){
 				w = step < 3 ? 't' : 'b';
-				doc.getElementById("counter_" + w + "_d" + n).style.backgroundPosition = bp[step];
+				a = doc.getElementById(o.idPre + "_" + w + "_d" + n);
+				if (a) a.style.backgroundPosition = bp[step];
 				step++;
 				if (step != 3) setTimeout(animate, speed);
 				else animate();
@@ -340,12 +342,11 @@ var flipCounter = function(d, options){
 
 	// Adds new digit
 	function addDigit(len, digit){
-		console.log('add');
 		var li = Number(len) - 1;
 		newDigit = doc.createElement("ul");
 		newDigit.className = 'cd';
-		newDigit.id = 'counter_d' + li;
-		newDigit.innerHTML = '<li class="t" id="counter_t_d' + li + '"></li><li class="b" id="counter_b_d' + li + '"></li>';
+		newDigit.id = o.idPre + '_d' + li;
+		newDigit.innerHTML = '<li class="t" id="' + o.idPre + '_t_d' + li + '"></li><li class="b" id="' + o.idPre + '_b_d' + li + '"></li>';
 		
 		if (li % 3 == 0){
 			newComma = doc.createElement("ul");
@@ -355,13 +356,13 @@ var flipCounter = function(d, options){
 		}
 		
 		div.insertBefore(newDigit, div.firstChild);
-		doc.getElementById("counter_t_d" + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
-		doc.getElementById("counter_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH) + 'px';
+		doc.getElementById(o.idPre + "_t_d" + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
+		doc.getElementById(o.idPre + "_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH) + 'px';
 	}
 	
 	// Removes digit
 	function removeDigit(id){
-		var remove = doc.getElementById("counter_d" + id);
+		var remove = doc.getElementById(o.idPre + "_d" + id);
 		div.removeChild(remove);
 
 		// Check for leading comma
@@ -381,8 +382,8 @@ var flipCounter = function(d, options){
 		for (i = 0; i < count; i++){
 			newDigit = doc.createElement("ul");
 			newDigit.className = 'cd';
-			newDigit.id = 'counter_d' + i;
-			newDigit.innerHTML = newDigit.innerHTML = '<li class="t" id="counter_t_d' + i + '"></li><li class="b" id="counter_b_d' + i + '"></li>';
+			newDigit.id = o.idPre + '_d' + i;
+			newDigit.innerHTML = newDigit.innerHTML = '<li class="t" id="' + o.idPre + '_t_d' + i + '"></li><li class="b" id="' + o.idPre + '_b_d' + i + '"></li>';
 			div.insertBefore(newDigit, div.firstChild);
 			if (bit != (count) && bit % 3 == 0){
 				newComma = doc.createElement("ul");
@@ -395,8 +396,8 @@ var flipCounter = function(d, options){
 		// Sets them to the right number
 		var digits = splitToArray(initial);
 		for (i = 0; i < count; i++){
-			doc.getElementById("counter_t_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
-			doc.getElementById("counter_b_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH) + 'px';
+			doc.getElementById(o.idPre + "_t_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
+			doc.getElementById(o.idPre + "_b_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH) + 'px';
 		}
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
