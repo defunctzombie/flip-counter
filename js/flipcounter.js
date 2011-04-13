@@ -1,6 +1,7 @@
 /**
  * Apple-Style Flip Counter
  * ------------------------
+ * Version 0.5 - April 13, 2011 
  *
  * Copyright (c) 2010 Chris Nanney
  * http://cnanney.com/journal/code/apple-style-counter-revisited/
@@ -18,18 +19,18 @@ var flipCounter = function(d, options){
 		inc: 1,
 		pace: 1000,
 		auto: true,
-		debug: false //Uses console.log, so don't enable unless your browser supports it.
+		tFH: 39,
+		bFH: 64,
+		fW: 53
 	};
 	
 	var o = options || {},
-	div = d && d != '' ? "#" + d : "#counter";
+	doc = window.document,
+	div = d && d != '' ? doc.getElementById(d) : doc.getElementById("counter");
 	
 	for (var opt in defaults) o[opt] = (opt in o) ? o[opt] : defaults[opt];
 
-	var tFrameHeight = 39,
-	bFrameHeight = 64,
-	frameWidth = 53,
-	digitsOld = [], digitsNew = [], subStart, subEnd, x, y, nextCount = null,
+	var digitsOld = [], digitsNew = [], subStart, subEnd, x, y, nextCount = null, newDigit, newComma,
 	best = {
 		q: null,
 		pace: 0,
@@ -47,8 +48,8 @@ var flipCounter = function(d, options){
 	 */
 	this.setValue = function(n){
 		if (isNumber(n)){
-			x = o.value.toString();
-			y = n.toString();
+			x = o.value;
+			y = n;
 			o.value = n;
 			digitCheck(x,y);
 		}
@@ -108,9 +109,9 @@ var flipCounter = function(d, options){
 	 */
 	this.add = function(n){
 		if (isNumber(n)){
-			x = o.value.toString();
+			x = o.value;
 			o.value += n;
-			y = o.value.toString();
+			y = o.value;
 			digitCheck(x,y);
 		}
 		return this;
@@ -124,10 +125,10 @@ var flipCounter = function(d, options){
 	 */
 	this.subtract = function(n){
 		if (isNumber(n)){
-			x = o.value.toString();
+			x = o.value;
 			o.value -= n;
 			if (o.value >= 0){
-				y = o.value.toString();
+				y = o.value;
 			}
 			else{
 				y = "0";
@@ -166,29 +167,13 @@ var flipCounter = function(d, options){
 			
 			check = checkSmartValues(diff, cycles, inc, pace, time);
 			
-			// DEBUGGING
-			
-//			if (o.debug){
-//				console.log(
-//					'***************************************************************\n' +
-//					'START: ' + o.value + '\nEND: ' + n + '\n' + check.str
-//				);
-//			}
-			
 			if (diff > 0){
 				while (check.result === false && i < 100){				
 					pace += 10;
 					cycles = Math.floor(time / pace);
 					inc = Math.floor(diff / cycles);
 					
-					check = checkSmartValues(diff, cycles, inc, pace, time);
-					
-					// DEBUGGING
-					
-//					if (o.debug){
-//						console.log('ADJUSTMENT: ' + (i + 1) + '\n' + check.str);
-//					}
-					
+					check = checkSmartValues(diff, cycles, inc, pace, time);					
 					i++;
 				}
 				
@@ -232,9 +217,9 @@ var flipCounter = function(d, options){
 	//---------------------------------------------------------------------------//
 	
 	function doCount(){
-		x = o.value.toString();
+		x = o.value;
 		o.value += o.inc;
-		y = o.value.toString();
+		y = o.value;
 		digitCheck(x,y);
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
 	}
@@ -247,14 +232,14 @@ var flipCounter = function(d, options){
 		if (smart === true) cycles--;
 		
 		if (val != n){
-			x = o.value.toString(),
+			x = o.value,
 			o.auto = true;
 
 			if (val + o.inc <= n && cycles != 0) val += o.inc
 			else val = n;
 			
 			o.value = val;
-			y = o.value.toString();
+			y = o.value;
 			
 			digitCheck(x,y);
 			nextCount = setTimeout(function(){doIncrement(n, smart, cycles)}, o.pace);
@@ -263,7 +248,9 @@ var flipCounter = function(d, options){
 	}
 	
 	function digitCheck(x,y){
-		var diff, adder;
+		var diff, adder,
+		x = x.toString(),
+		y = y.toString();
 		digitsOld = splitToArray(x);
 		digitsNew = splitToArray(y);
 		if (y.length > x.length){
@@ -293,13 +280,13 @@ var flipCounter = function(d, options){
 	function animateDigit(n, oldDigit, newDigit){
 		var speed, step = 0, w,
 		bp = [
-			'-' + frameWidth + 'px -' + (oldDigit * tFrameHeight) + 'px',
-			(frameWidth * -2) + 'px -' + (oldDigit * tFrameHeight) + 'px',
-			'0 -' + (newDigit * tFrameHeight) + 'px',
-			'-' + frameWidth + 'px -' + (oldDigit * bFrameHeight) + 'px',
-			(frameWidth * -2) + 'px -' + (newDigit * bFrameHeight) + 'px',
-			(frameWidth * -3) + 'px -' + (newDigit * bFrameHeight) + 'px',
-			'0 -' + (newDigit * bFrameHeight) + 'px'
+			'-' + o.fW + 'px -' + (oldDigit * o.tFH) + 'px',
+			(o.fW * -2) + 'px -' + (oldDigit * o.tFH) + 'px',
+			'0 -' + (newDigit * o.tFH) + 'px',
+			'-' + o.fW + 'px -' + (oldDigit * o.bFH) + 'px',
+			(o.fW * -2) + 'px -' + (newDigit * o.bFH) + 'px',
+			(o.fW * -3) + 'px -' + (newDigit * o.bFH) + 'px',
+			'0 -' + (newDigit * o.bFH) + 'px'
 		];
 
 		if (o.auto === true && o.pace <= 300){
@@ -330,7 +317,7 @@ var flipCounter = function(d, options){
 		function animate(){
 			if (step < 7){
 				w = step < 3 ? 't' : 'b';
-				jQuery(div + " #d" + n + " li." + w).css("background-position", bp[step]);
+				doc.getElementById("counter_" + w + "_d" + n).style.backgroundPosition = bp[step];
 				step++;
 				if (step != 3) setTimeout(animate, speed);
 				else animate();
@@ -353,36 +340,63 @@ var flipCounter = function(d, options){
 
 	// Adds new digit
 	function addDigit(len, digit){
+		console.log('add');
 		var li = Number(len) - 1;
-		if (li % 3 == 0) jQuery(div).prepend('<ul class="cd"><li class="s"></li></ul>');
-		jQuery(div).prepend('<ul class="cd" id="d' + li + '"><li class="t"></li><li class="b"></li></ul>');
-		jQuery(div + " #d" + li + " li.t").css({'background-position': '0 -' + (digit * tFrameHeight) + 'px'});
-		jQuery(div + " #d" + li + " li.b").css({'background-position': '0 -' + (digit * bFrameHeight) + 'px'});
+		newDigit = doc.createElement("ul");
+		newDigit.className = 'cd';
+		newDigit.id = 'counter_d' + li;
+		newDigit.innerHTML = '<li class="t" id="counter_t_d' + li + '"></li><li class="b" id="counter_b_d' + li + '"></li>';
+		
+		if (li % 3 == 0){
+			newComma = doc.createElement("ul");
+			newComma.className = 'cd';
+			newComma.innerHTML = '<li class="s"></li>';
+			div.insertBefore(newComma, div.firstChild);
+		}
+		
+		div.insertBefore(newDigit, div.firstChild);
+		doc.getElementById("counter_t_d" + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
+		doc.getElementById("counter_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH) + 'px';
 	}
 	
 	// Removes digit
 	function removeDigit(id){
-		jQuery(div + " #d" + id).remove();
+		var remove = doc.getElementById("counter_d" + id);
+		div.removeChild(remove);
+
 		// Check for leading comma
-		var first = jQuery(div + " li").first();
-		if (first.hasClass("s")) first.parent("ul").remove();
+		var first = div.firstChild.firstChild;
+		if ((" " + first.className + " ").indexOf(" s ") > -1 ){
+			remove = first.parentNode;
+			div.removeChild(remove);
+		}
 	}
 
 	// Sets the correct digits on load
 	function initialDigitCheck(initial){
 		// Creates the right number of digits
-		var count = initial.toString().length,
+		var initial = initial.toString(),
+		count = initial.length,
 		bit = 1, i;
 		for (i = 0; i < count; i++){
-			jQuery(div).prepend('<ul class="cd" id="d' + i + '"><li class="t"></li><li class="b"></li></ul>');
-			if (bit != (count) && bit % 3 == 0) jQuery(div).prepend('<ul class="cd"><li class="s"></li></ul>');
+			newDigit = doc.createElement("ul");
+			newDigit.className = 'cd';
+			newDigit.id = 'counter_d' + i;
+			newDigit.innerHTML = newDigit.innerHTML = '<li class="t" id="counter_t_d' + i + '"></li><li class="b" id="counter_b_d' + i + '"></li>';
+			div.insertBefore(newDigit, div.firstChild);
+			if (bit != (count) && bit % 3 == 0){
+				newComma = doc.createElement("ul");
+				newComma.className = 'cd';
+				newComma.innerHTML = '<li class="s"></li>';
+				div.insertBefore(newComma, div.firstChild);
+			}
 			bit++;
 		}
 		// Sets them to the right number
-		var digits = splitToArray(initial.toString());
+		var digits = splitToArray(initial);
 		for (i = 0; i < count; i++){
-			jQuery(div + " #d" + i + " li.t").css({'background-position': '0 -' + (digits[i] * tFrameHeight) + 'px'});
-			jQuery(div + " #d" + i + " li.b").css({'background-position': '0 -' + (digits[i] * bFrameHeight) + 'px'});
+			doc.getElementById("counter_t_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
+			doc.getElementById("counter_b_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH) + 'px';
 		}
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
@@ -413,33 +427,11 @@ var flipCounter = function(d, options){
 			}
 		}
 		
-		// DEBUGGING
-		//r.str = 'Condition Checks:\n';
 		for (var i = 1; i <= 5; i++){
-			//r.str += i + ': ';
 			if (r['cond' + i] === false){
-				//r.str += 'FAIL';
 				r.result = false;
-			}
-			
-//			else{
-//				r.str += 'PASS';
-//			}
-//			r.str += i < 5 ? ', ' : '';
-			
+			}			
 		}
-		
-		// DEBUGGING
-		
-//		r.str += '\n----\n   Pace: ' + pace +
-//			'\n   Diff: ' + diff +
-//			'\n   Cycles: ' + cycles +
-//			'\n   Calculated Inc: ' + (diff / cycles) +
-//			'\n   Rounded Inc: ' + inc +
-//			'\n   Calculated time: ' + Math.abs(cycles * pace) +
-//			'\n   Target time: ' + time +
-//			'\n   ACTUAL END VALUE: ' + (cycles*inc+o.value);
-		
 		return r;
 	}
 	
