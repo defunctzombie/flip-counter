@@ -1,7 +1,7 @@
 /**
  * Apple-Style Flip Counter
  * ------------------------
- * Version 0.5 - April 13, 2011 
+ * Version 0.5.1 - April 13, 2011 
  *
  * Copyright (c) 2010 Chris Nanney
  * http://cnanney.com/journal/code/apple-style-counter-revisited/
@@ -249,29 +249,26 @@ var flipCounter = function(d, options){
 	}
 	
 	function digitCheck(x,y){
-		var diff, adder,
-		x = x.toString(),
-		y = y.toString();
 		digitsOld = splitToArray(x);
 		digitsNew = splitToArray(y);
-		if (y.length > x.length){
-			diff = y.length - x.length;
+		var diff,
+		xlen = digitsOld.length,
+		ylen = digitsNew.length;
+		if (ylen > xlen){
+			diff = ylen - xlen;
 			while (diff > 0){
-				adder = 1;
-				addDigit(y.length - diff + 1, digitsNew[y.length - diff]);
-				adder++;
+				addDigit(ylen - diff + 1, digitsNew[ylen - diff]);
 				diff--;
 			}
 		}
-		if (y.length < x.length){
-			diff = x.length - y.length;
+		if (ylen < xlen){
+			diff = xlen - ylen;
 			while (diff > 0){
-				adder = 1;
-				removeDigit(x.length - diff);
+				removeDigit(xlen - diff);
 				diff--;
 			}
 		}
-		for (var i = 0; i < digitsOld.length; i++){
+		for (var i = 0; i < xlen; i++){
 			if (digitsNew[i] != digitsOld[i]){
 				animateDigit(i, digitsOld[i], digitsNew[i]);
 			}
@@ -331,13 +328,7 @@ var flipCounter = function(d, options){
 	
 	// Creates array of digits for easier manipulation
 	function splitToArray(input){
-		var digits = new Array();
-		for (var i = 0; i < input.length; i++){
-			subStart = input.length - (i + 1);
-			subEnd = input.length - i;
-			digits[i] = input.substring(subStart, subEnd);
-		}
-		return digits;
+		return input.toString().split("").reverse();
 	}
 
 	// Adds new digit
