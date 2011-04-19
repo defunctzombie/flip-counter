@@ -1,11 +1,9 @@
 /**
  * Apple-Style Flip Counter
- * ------------------------
- * Version 0.5.1 - April 13, 2011 
+ * Version 0.5.2 - April 19, 2011 
  *
  * Copyright (c) 2010 Chris Nanney
  * http://cnanney.com/journal/code/apple-style-counter-revisited/
- * http://cnanney.com/journal/code/apple-style-counter/
  *
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
@@ -22,6 +20,7 @@ var flipCounter = function(d, options){
 		tFH: 39,
 		bFH: 64,
 		fW: 53,
+		bOffset: 390,
 		idPre: 'counter'
 	};
 	
@@ -281,10 +280,10 @@ var flipCounter = function(d, options){
 			'-' + o.fW + 'px -' + (oldDigit * o.tFH) + 'px',
 			(o.fW * -2) + 'px -' + (oldDigit * o.tFH) + 'px',
 			'0 -' + (newDigit * o.tFH) + 'px',
-			'-' + o.fW + 'px -' + (oldDigit * o.bFH) + 'px',
-			(o.fW * -2) + 'px -' + (newDigit * o.bFH) + 'px',
-			(o.fW * -3) + 'px -' + (newDigit * o.bFH) + 'px',
-			'0 -' + (newDigit * o.bFH) + 'px'
+			'-' + o.fW + 'px -' + (oldDigit * o.bFH + o.bOffset) + 'px',
+			(o.fW * -2) + 'px -' + (newDigit * o.bFH + o.bOffset) + 'px',
+			(o.fW * -3) + 'px -' + (newDigit * o.bFH + o.bOffset) + 'px',
+			'0 -' + (newDigit * o.bFH + o.bOffset) + 'px'
 		];
 
 		if (o.auto === true && o.pace <= 300){
@@ -388,7 +387,7 @@ var flipCounter = function(d, options){
 		var digits = splitToArray(initial);
 		for (i = 0; i < count; i++){
 			doc.getElementById(o.idPre + "_t_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
-			doc.getElementById(o.idPre + "_b_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH) + 'px';
+			doc.getElementById(o.idPre + "_b_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH + o.bOffset) + 'px';
 		}
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
