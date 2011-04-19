@@ -347,7 +347,7 @@ var flipCounter = function(d, options){
 		
 		div.insertBefore(newDigit, div.firstChild);
 		doc.getElementById(o.idPre + "_t_d" + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
-		doc.getElementById(o.idPre + "_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH) + 'px';
+		doc.getElementById(o.idPre + "_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH + o.bOffset) + 'px';
 	}
 	
 	// Removes digit
