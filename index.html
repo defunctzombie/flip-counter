@@ -12,9 +12,7 @@
 	<link rel="stylesheet" type="text/css" href="css/counter.css" />
 	
 
-	<!-- 
-	NOT REQUIRED FOR COUNTER TO FUNCTION, JUST FOR DEMO PURPOSES
-	------------------------------------------------------------>
+	<!-- NOT REQUIRED FOR COUNTER TO FUNCTION, JUST FOR DEMO PURPOSES -->
 	<!-- jQuery from Google CDN, NOT REQUIRED for the counter itself -->
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 	<!-- jQueryUI from Google CDN, used only for the fancy demo controls, NOT REQUIRED for the counter itself -->
@@ -111,10 +109,10 @@
 	<script type="text/javascript">
 	//<![CDATA[
 
-	// Initialize a new counter
-	var myCounter = new flipCounter('counter', {value:10000, inc:123, pace:600, auto:true});
-
 	$(function(){
+		
+		// Initialize a new counter
+		var myCounter = new flipCounter('counter', {value:10000, inc:123, pace:600, auto:true});
 
 		/**
 		 * Demo controls
@@ -139,7 +137,7 @@
 			range: "max",
 			value: 600,
 			min: 100,
-			max: 1000,
+			max: 2000,
 			step: 100,
 			slide: function( event, ui ) {
 				myCounter.setPace(ui.value);
