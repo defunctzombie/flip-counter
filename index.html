@@ -28,12 +28,12 @@
 
 	<div class="explain">
 		<p>This counter was initialized with the following code:</p>
-		<code>var myCounter = new flipCounter('counter', {value:10000, inc:123, pace:600, auto:true});</code>
+		<code>var myCounter = new flipCounter('flip-counter', {value:10000, inc:123, pace:600, auto:true});</code>
 		<p>Use the controls below to make changes to the counter using built-in methods.</p>
 		<p><a class="back" href="http://cnanney.com/journal/code/apple-style-counter-revisited/">http://cnanney.com/journal/code/apple-style-counter-revisited/</a></p>
 	</div>
 
-	<div id="wrapper"><div id="counter"></div></div>
+	<div id="wrapper"><div id="flip-counter" class="flip-counter"></div></div>
 
 	<div class="clear"></div>
 	<ul id="demo_controls">
@@ -112,7 +112,7 @@
 	$(function(){
 		
 		// Initialize a new counter
-		var myCounter = new flipCounter('counter', {value:10000, inc:123, pace:600, auto:true});
+		var myCounter = new flipCounter('flip-counter', {value:10000, inc:123, pace:600, auto:true});
 
 		/**
 		 * Demo controls

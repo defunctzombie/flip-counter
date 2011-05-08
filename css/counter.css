@@ -5,11 +5,12 @@ Set image paths accordingly.
 
 THIS YOU NEED TO KEEP.
 
-This assumes the ID of the counter div is "#counter"
+So you can have multiple counters on a page, just make sure each one has a class of "flip-counter".
 
 */
 
-#counter ul.cd{float:left;list-style-type:none;margin:0;padding:0}
-#counter li.t{background:url(../img/digits.png) 0 0 no-repeat;width:53px;height:39px}
-#counter li.b{background:url(../img/digits.png) 0 0 no-repeat;width:53px;height:64px}
-#counter li.s{background:url(../img/comma.png) 2px 75px no-repeat;width:12px;height:100px}
+.flip-counter ul.cd{float:left;list-style-type:none;margin:0;padding:0}
+.flip-counter li{background:url(../img/digits.png) 0 0 no-repeat}
+.flip-counter li.t{background-position:0 0;width:53px;height:39px}
+.flip-counter li.b{background-position:0 0;width:53px;height:64px}
+.flip-counter li.s{background-position:-53px -1030px;width:14px;height:103px}

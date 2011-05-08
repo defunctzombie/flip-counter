@@ -11,7 +11,7 @@ I know it's messy... it's a demo.
 body{font-family:verdana}
 p{line-height:16px;margin:0 0 5px}
 #wrapper{float:right;position:relative;left:-50%;margin-top:30px}
-#counter{position:relative;left:50%;clear:both}
+#flip-counter{position:relative;left:50%;clear:both}
 .clear{clear:both}
 #demo_controls{padding:0;width:700px;margin:20px auto;list-style-type:none}
 #demo_controls li{width:700px;text-align:center;margin:0 0 20px;font-weight:bold;font-size:13px}

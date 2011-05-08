@@ -1,6 +1,6 @@
 /**
  * Apple-Style Flip Counter
- * Version 0.5.2 - April 19, 2011 
+ * Version 0.5.3 - May 7, 2011 
  *
  * Copyright (c) 2010 Chris Nanney
  * http://cnanney.com/journal/code/apple-style-counter-revisited/
@@ -20,13 +20,13 @@ var flipCounter = function(d, options){
 		tFH: 39,
 		bFH: 64,
 		fW: 53,
-		bOffset: 390,
-		idPre: 'counter'
+		bOffset: 390
 	};
 	
 	var o = options || {},
 	doc = window.document,
-	div = d && d != '' ? doc.getElementById(d) : doc.getElementById("counter");
+	divId = typeof d !== 'undefined' && d !== '' ? d : 'flip-counter',
+	div = doc.getElementById(divId);
 	
 	for (var opt in defaults) o[opt] = (opt in o) ? o[opt] : defaults[opt];
 
@@ -314,7 +314,7 @@ var flipCounter = function(d, options){
 		function animate(){
 			if (step < 7){
 				w = step < 3 ? 't' : 'b';
-				a = doc.getElementById(o.idPre + "_" + w + "_d" + n);
+				a = doc.getElementById(divId + "_" + w + "_d" + n);
 				if (a) a.style.backgroundPosition = bp[step];
 				step++;
 				if (step != 3) setTimeout(animate, speed);
@@ -335,8 +335,8 @@ var flipCounter = function(d, options){
 		var li = Number(len) - 1;
 		newDigit = doc.createElement("ul");
 		newDigit.className = 'cd';
-		newDigit.id = o.idPre + '_d' + li;
-		newDigit.innerHTML = '<li class="t" id="' + o.idPre + '_t_d' + li + '"></li><li class="b" id="' + o.idPre + '_b_d' + li + '"></li>';
+		newDigit.id = divId + '_d' + li;
+		newDigit.innerHTML = '<li class="t" id="' + divId + '_t_d' + li + '"></li><li class="b" id="' + divId + '_b_d' + li + '"></li>';
 		
 		if (li % 3 == 0){
 			newComma = doc.createElement("ul");
@@ -346,13 +346,13 @@ var flipCounter = function(d, options){
 		}
 		
 		div.insertBefore(newDigit, div.firstChild);
-		doc.getElementById(o.idPre + "_t_d" + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
-		doc.getElementById(o.idPre + "_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH + o.bOffset) + 'px';
+		doc.getElementById(divId + "_t_d" + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
+		doc.getElementById(divId + "_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH + o.bOffset) + 'px';
 	}
 	
 	// Removes digit
 	function removeDigit(id){
-		var remove = doc.getElementById(o.idPre + "_d" + id);
+		var remove = doc.getElementById(divId + "_d" + id);
 		div.removeChild(remove);
 
 		// Check for leading comma
@@ -364,16 +364,16 @@ var flipCounter = function(d, options){
 	}
 
 	// Sets the correct digits on load
-	function initialDigitCheck(initial){
+	function initialDigitCheck(init){
 		// Creates the right number of digits
-		var initial = initial.toString(),
+		var initial = init.toString(),
 		count = initial.length,
 		bit = 1, i;
 		for (i = 0; i < count; i++){
 			newDigit = doc.createElement("ul");
 			newDigit.className = 'cd';
-			newDigit.id = o.idPre + '_d' + i;
-			newDigit.innerHTML = newDigit.innerHTML = '<li class="t" id="' + o.idPre + '_t_d' + i + '"></li><li class="b" id="' + o.idPre + '_b_d' + i + '"></li>';
+			newDigit.id = divId + '_d' + i;
+			newDigit.innerHTML = newDigit.innerHTML = '<li class="t" id="' + divId + '_t_d' + i + '"></li><li class="b" id="' + divId + '_b_d' + i + '"></li>';
 			div.insertBefore(newDigit, div.firstChild);
 			if (bit != (count) && bit % 3 == 0){
 				newComma = doc.createElement("ul");
@@ -386,8 +386,8 @@ var flipCounter = function(d, options){
 		// Sets them to the right number
 		var digits = splitToArray(initial);
 		for (i = 0; i < count; i++){
-			doc.getElementById(o.idPre + "_t_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
-			doc.getElementById(o.idPre + "_b_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH + o.bOffset) + 'px';
+			doc.getElementById(divId + "_t_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
+			doc.getElementById(divId + "_b_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH + o.bOffset) + 'px';
 		}
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
