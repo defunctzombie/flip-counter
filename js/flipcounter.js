@@ -1,6 +1,6 @@
 /**
  * Apple-Style Flip Counter
- * Version 0.5.3 - May 7, 2011 
+ * Version 0.5.3 - May 7, 2011
  *
  * Copyright (c) 2010 Chris Nanney
  * http://cnanney.com/journal/code/apple-style-counter-revisited/
@@ -8,7 +8,7 @@
  * Licensed under MIT
  * http://www.opensource.org/licenses/mit-license.php
  */
- 
+
 var flipCounter = function(d, options){
 
 	// Default values
@@ -22,13 +22,15 @@ var flipCounter = function(d, options){
 		fW: 53,
 		bOffset: 390
 	};
-	
-	var o = options || {},
-	doc = window.document,
+
+	var	doc = window.document,
 	divId = typeof d !== 'undefined' && d !== '' ? d : 'flip-counter',
 	div = doc.getElementById(divId);
-	
-	for (var opt in defaults) o[opt] = (opt in o) ? o[opt] : defaults[opt];
+
+    var o = {};
+    for (var opt in defaults) {
+        o[opt] = (opt in options) ? options[opt] : defaults[opt];
+    }
 
 	var digitsOld = [], digitsNew = [], subStart, subEnd, x, y, nextCount = null, newDigit, newComma,
 	best = {
@@ -36,10 +38,10 @@ var flipCounter = function(d, options){
 		pace: 0,
 		inc: 0
 	};
-	
+
 	/**
 	 * Sets the value of the counter and animates the digits to new value.
-	 * 
+	 *
 	 * Example: myCounter.setValue(500); would set the value of the counter to 500,
 	 * no matter what value it was previously.
 	 *
@@ -55,7 +57,7 @@ var flipCounter = function(d, options){
 		}
 		return this;
 	};
-	
+
 	/**
 	 * Sets the increment for the counter. Does NOT animate digits.
 	 */
@@ -63,7 +65,7 @@ var flipCounter = function(d, options){
 		o.inc = isNumber(n) ? n : defaults.inc;
 		return this;
 	};
-	
+
 	/**
 	 * Sets the pace of the counter. Only affects counter when auto == true.
 	 *
@@ -74,7 +76,7 @@ var flipCounter = function(d, options){
 		o.pace = isNumber(n) ? n : defaults.pace;
 		return this;
 	};
-	
+
 	/**
 	 * Sets counter to auto-incrememnt (true) or not (false).
 	 *
@@ -82,7 +84,7 @@ var flipCounter = function(d, options){
 	 *   Should counter auto-increment, true or false
 	 */
 	this.setAuto = function(a){
-		if (a && ! o.atuo){
+		if (a && ! o.auto){
 			o.auto = true;
 			doCount();
 		}
@@ -92,7 +94,7 @@ var flipCounter = function(d, options){
 		}
 		return this;
 	};
-	
+
 	/**
 	 * Increments counter by one animation based on set 'inc' value.
 	 */
@@ -100,7 +102,7 @@ var flipCounter = function(d, options){
 		if (! o.auto) doCount();
 		return this;
 	};
-	
+
 	/**
 	 * Adds a number to the counter value, not affecting the 'inc' or 'pace' of the counter.
 	 *
@@ -116,7 +118,7 @@ var flipCounter = function(d, options){
 		}
 		return this;
 	};
-	
+
 	/**
 	 * Subtracts a number from the counter value, not affecting the 'inc' or 'pace' of the counter.
 	 *
@@ -138,7 +140,7 @@ var flipCounter = function(d, options){
 		}
 		return this;
 	};
-	
+
 	/**
 	 * Increments counter to given value, animating by current pace and increment.
 	 *
@@ -151,7 +153,7 @@ var flipCounter = function(d, options){
 	 */
 	this.incrementTo = function(n, t, p){
 		if (nextCount) clearNext();
-		
+
 		// Smart increment
 		if (typeof t != 'undefined'){
 			var time = isNumber(t) ? t * 1000 : 10000,
@@ -159,24 +161,24 @@ var flipCounter = function(d, options){
 			diff = typeof n != 'undefined' && isNumber(n) ? n - o.value : 0,
 			cycles, inc, check, i = 0;
 			best.q = null;
-			
+
 			// Initial best guess
 			pace = (time / diff > pace) ? Math.round((time / diff) / 10) * 10 : pace;
 			cycles = Math.floor(time / pace);
 			inc = Math.floor(diff / cycles);
-			
+
 			check = checkSmartValues(diff, cycles, inc, pace, time);
-			
+
 			if (diff > 0){
-				while (check.result === false && i < 100){				
+				while (check.result === false && i < 100){
 					pace += 10;
 					cycles = Math.floor(time / pace);
 					inc = Math.floor(diff / cycles);
-					
-					check = checkSmartValues(diff, cycles, inc, pace, time);					
+
+					check = checkSmartValues(diff, cycles, inc, pace, time);
 					i++;
 				}
-				
+
 				if (i == 100){
 					// Could not find optimal settings, use best found so far
 					o.inc = best.inc;
@@ -187,25 +189,25 @@ var flipCounter = function(d, options){
 					o.inc = inc;
 					o.pace = pace;
 				}
-				
+
 				doIncrement(n, true, cycles);
 			}
-		
+
 		}
 		// Regular increment
 		else{
 			doIncrement(n);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Gets current value of counter.
 	 */
 	this.getValue = function(){
 		return o.value;
 	}
-	
+
 	/**
 	 * Stops all running increments.
 	 */
@@ -213,9 +215,9 @@ var flipCounter = function(d, options){
 		if (nextCount) clearNext();
 		return this;
 	}
-	
+
 	//---------------------------------------------------------------------------//
-	
+
 	function doCount(){
 		x = o.value;
 		o.value += o.inc;
@@ -223,30 +225,30 @@ var flipCounter = function(d, options){
 		digitCheck(x,y);
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
 	}
-	
+
 	function doIncrement(n, s, c){
 		var val = o.value,
 		smart = (typeof s == 'undefined') ? false : s,
 		cycles = (typeof c == 'undefined') ? 1 : c;
-		
+
 		if (smart === true) cycles--;
-		
+
 		if (val != n){
 			x = o.value,
 			o.auto = true;
 
 			if (val + o.inc <= n && cycles != 0) val += o.inc
 			else val = n;
-			
+
 			o.value = val;
 			y = o.value;
-			
+
 			digitCheck(x,y);
 			nextCount = setTimeout(function(){doIncrement(n, smart, cycles)}, o.pace);
 		}
 		else o.auto = false;
 	}
-	
+
 	function digitCheck(x,y){
 		digitsOld = splitToArray(x);
 		digitsNew = splitToArray(y);
@@ -273,7 +275,7 @@ var flipCounter = function(d, options){
 			}
 		}
 	}
-	
+
 	function animateDigit(n, oldDigit, newDigit){
 		var speed, step = 0, w, a,
 		bp = [
@@ -310,7 +312,7 @@ var flipCounter = function(d, options){
 		}
 		// Cap on slowest animation can go
 		speed = (speed > 80) ? 80 : speed;
-		
+
 		function animate(){
 			if (step < 7){
 				w = step < 3 ? 't' : 'b';
@@ -321,10 +323,10 @@ var flipCounter = function(d, options){
 				else animate();
 			}
 		}
-		
+
 		animate();
 	}
-	
+
 	// Creates array of digits for easier manipulation
 	function splitToArray(input){
 		return input.toString().split("").reverse();
@@ -337,19 +339,19 @@ var flipCounter = function(d, options){
 		newDigit.className = 'cd';
 		newDigit.id = divId + '_d' + li;
 		newDigit.innerHTML = '<li class="t" id="' + divId + '_t_d' + li + '"></li><li class="b" id="' + divId + '_b_d' + li + '"></li>';
-		
+
 		if (li % 3 == 0){
 			newComma = doc.createElement("ul");
 			newComma.className = 'cd';
 			newComma.innerHTML = '<li class="s"></li>';
 			div.insertBefore(newComma, div.firstChild);
 		}
-		
+
 		div.insertBefore(newDigit, div.firstChild);
 		doc.getElementById(divId + "_t_d" + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
 		doc.getElementById(divId + "_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH + o.bOffset) + 'px';
 	}
-	
+
 	// Removes digit
 	function removeDigit(id){
 		var remove = doc.getElementById(divId + "_d" + id);
@@ -392,7 +394,7 @@ var flipCounter = function(d, options){
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
 	}
-	
+
 	// Checks values for smart increment and creates debug text
 	function checkSmartValues(diff, cycles, inc, pace, time){
 		var r = {result: true}, q;
@@ -407,7 +409,7 @@ var flipCounter = function(d, options){
 		r.cond4 = (Math.abs(cycles * pace - time) <= 100) ? true : false;
 		// 5: Calculated time should not be over target time
 		r.cond5 = (cycles * pace <= time) ? true : false;
-		
+
 		// Keep track of 'good enough' values in case can't find best one within 100 loops
 		if (r.cond1 && r.cond2 && r.cond4 && r.cond5){
 			q = Math.abs(diff - (cycles * inc)) + Math.abs(cycles * pace - time);
@@ -417,25 +419,25 @@ var flipCounter = function(d, options){
 				best.inc = inc;
 			}
 		}
-		
+
 		for (var i = 1; i <= 5; i++){
 			if (r['cond' + i] === false){
 				r.result = false;
-			}			
+			}
 		}
 		return r;
 	}
-	
+
 	// http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric/1830844
 	function isNumber(n) {
 		return !isNaN(parseFloat(n)) && isFinite(n);
 	}
-	
+
 	function clearNext(){
 		clearTimeout(nextCount);
 		nextCount = null;
 	}
-	
+
 	// Start it up
 	initialDigitCheck(o.value);
 };
