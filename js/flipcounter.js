@@ -441,3 +441,5 @@ var flipCounter = function(d, options){
 	// Start it up
 	initialDigitCheck(o.value);
 };
+
+module.exports = flipCounter;
