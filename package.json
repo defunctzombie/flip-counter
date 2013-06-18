@@ -3,6 +3,11 @@
     "version": "0.5.3",
     "main": "./js/flipcounter.js",
     "style": "./css/counter.css",
+    "keywords": [
+        "counter",
+        "flip",
+        "widget"
+    ],
     "contributors": [
         "Chris Nanney <cnanney@gmail.com>",
         "Roman Shtylman <shtylman@gmail.com>"
