@@ -133,7 +133,7 @@ var flipCounter = function(d, options){
 				y = o.value;
 			}
 			else{
-				y = "0";
+				y = '0';
 				o.value = 0;
 			}
 			digitCheck(x,y);
@@ -316,7 +316,7 @@ var flipCounter = function(d, options){
 		function animate(){
 			if (step < 7){
 				w = step < 3 ? 't' : 'b';
-				a = doc.getElementById(divId + "_" + w + "_d" + n);
+				a = doc.getElementById(divId + '_' + w + '_d' + n);
 				if (a) a.style.backgroundPosition = bp[step];
 				step++;
 				if (step != 3) setTimeout(animate, speed);
@@ -329,37 +329,37 @@ var flipCounter = function(d, options){
 
 	// Creates array of digits for easier manipulation
 	function splitToArray(input){
-		return input.toString().split("").reverse();
+		return input.toString().split('').reverse();
 	}
 
 	// Adds new digit
 	function addDigit(len, digit){
 		var li = Number(len) - 1;
-		newDigit = doc.createElement("ul");
+		newDigit = doc.createElement('div');
 		newDigit.className = 'cd';
 		newDigit.id = divId + '_d' + li;
-		newDigit.innerHTML = '<li class="t" id="' + divId + '_t_d' + li + '"></li><li class="b" id="' + divId + '_b_d' + li + '"></li>';
+		newDigit.innerHTML = '<div class="digit t" id="' + divId + '_t_d' + li + '"></div><div class="digit b" id="' + divId + '_b_d' + li + '"></div>';
 
 		if (li % 3 == 0){
-			newComma = doc.createElement("ul");
+			newComma = doc.createElement('div');
 			newComma.className = 'cd';
-			newComma.innerHTML = '<li class="s"></li>';
+			newComma.innerHTML = '<div class="s"></div>';
 			div.insertBefore(newComma, div.firstChild);
 		}
 
 		div.insertBefore(newDigit, div.firstChild);
-		doc.getElementById(divId + "_t_d" + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
-		doc.getElementById(divId + "_b_d" + li).style.backgroundPosition = '0 -' + (digit * o.bFH + o.bOffset) + 'px';
+		doc.getElementById(divId + '_t_d' + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
+		doc.getElementById(divId + '_b_d' + li).style.backgroundPosition = '0 -' + (digit * o.bFH + o.bOffset) + 'px';
 	}
 
 	// Removes digit
 	function removeDigit(id){
-		var remove = doc.getElementById(divId + "_d" + id);
+		var remove = doc.getElementById(divId + '_d' + id);
 		div.removeChild(remove);
 
 		// Check for leading comma
 		var first = div.firstChild.firstChild;
-		if ((" " + first.className + " ").indexOf(" s ") > -1 ){
+		if ((' ' + first.className + ' ').indexOf(' s ') > -1 ){
 			remove = first.parentNode;
 			div.removeChild(remove);
 		}
@@ -372,15 +372,15 @@ var flipCounter = function(d, options){
 		count = initial.length,
 		bit = 1, i;
 		for (i = 0; i < count; i++){
-			newDigit = doc.createElement("ul");
+			newDigit = doc.createElement('div');
 			newDigit.className = 'cd';
 			newDigit.id = divId + '_d' + i;
-			newDigit.innerHTML = newDigit.innerHTML = '<li class="t" id="' + divId + '_t_d' + i + '"></li><li class="b" id="' + divId + '_b_d' + i + '"></li>';
+			newDigit.innerHTML = newDigit.innerHTML = '<div class="digit t" id="' + divId + '_t_d' + i + '"></div><div class="digit b" id="' + divId + '_b_d' + i + '"></div>';
 			div.insertBefore(newDigit, div.firstChild);
 			if (bit != (count) && bit % 3 == 0){
-				newComma = doc.createElement("ul");
+				newComma = doc.createElement('div');
 				newComma.className = 'cd';
-				newComma.innerHTML = '<li class="s"></li>';
+				newComma.innerHTML = '<div class="s"></div>';
 				div.insertBefore(newComma, div.firstChild);
 			}
 			bit++;
@@ -388,8 +388,8 @@ var flipCounter = function(d, options){
 		// Sets them to the right number
 		var digits = splitToArray(initial);
 		for (i = 0; i < count; i++){
-			doc.getElementById(divId + "_t_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
-			doc.getElementById(divId + "_b_d" + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH + o.bOffset) + 'px';
+			doc.getElementById(divId + '_t_d' + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
+			doc.getElementById(divId + '_b_d' + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH + o.bOffset) + 'px';
 		}
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
