@@ -10,6 +10,9 @@
  */
 
 var flipCounter = function(d, options){
+	if (!(this instanceof flipCounter)) {
+		return new flipCounter(d, options);
+	}
 
 	// Default values
 	var defaults = {
@@ -17,15 +20,20 @@ var flipCounter = function(d, options){
 		inc: 1,
 		pace: 1000,
 		auto: true,
-		tFH: 39,
-		bFH: 64,
-		fW: 53,
-		bOffset: 390
+		tFH: 20,
+		bFH: 40,
+		fW: 30,
+		bOffset: 200
 	};
 
-	var	doc = window.document,
-	divId = typeof d !== 'undefined' && d !== '' ? d : 'flip-counter',
-	div = doc.getElementById(divId);
+	var digit_els = [];
+
+	var doc = window.document;
+
+	var div = d;
+	if (typeof d === 'string') {
+		div = doc.getElementById(d);
+	}
 
     var o = {};
     for (var opt in defaults) {
@@ -315,8 +323,8 @@ var flipCounter = function(d, options){
 
 		function animate(){
 			if (step < 7){
-				w = step < 3 ? 't' : 'b';
-				a = doc.getElementById(divId + '_' + w + '_d' + n);
+				w = step < 3 ? 'top' : 'bot';
+				a = digit_els[n][w];
 				if (a) a.style.backgroundPosition = bp[step];
 				step++;
 				if (step != 3) setTimeout(animate, speed);
@@ -335,10 +343,16 @@ var flipCounter = function(d, options){
 	// Adds new digit
 	function addDigit(len, digit){
 		var li = Number(len) - 1;
+
 		newDigit = doc.createElement('div');
 		newDigit.className = 'cd';
-		newDigit.id = divId + '_d' + li;
-		newDigit.innerHTML = '<div class="digit t" id="' + divId + '_t_d' + li + '"></div><div class="digit b" id="' + divId + '_b_d' + li + '"></div>';
+		newDigit.innerHTML = '<div class="digit t"></div><div class="digit b"></div>';
+
+		digit_els[li] = {
+			main: newDigit,
+			top: newDigit.firstChild,
+			bot: newDigit.lastChild
+		}
 
 		if (li % 3 == 0){
 			newComma = doc.createElement('div');
@@ -348,13 +362,14 @@ var flipCounter = function(d, options){
 		}
 
 		div.insertBefore(newDigit, div.firstChild);
-		doc.getElementById(divId + '_t_d' + li).style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
-		doc.getElementById(divId + '_b_d' + li).style.backgroundPosition = '0 -' + (digit * o.bFH + o.bOffset) + 'px';
+		newDigit.firstChild.style.backgroundPosition = '0 -' + (digit * o.tFH) + 'px';
+		newDigit.lastChild.style.backgroundPosition = '0 -' + (digit * o.bFH + o.bOffset) + 'px';
 	}
 
 	// Removes digit
 	function removeDigit(id){
-		var remove = doc.getElementById(divId + '_d' + id);
+	
+		var remove = digit_els[id].main;
 		div.removeChild(remove);
 
 		// Check for leading comma
@@ -368,14 +383,23 @@ var flipCounter = function(d, options){
 	// Sets the correct digits on load
 	function initialDigitCheck(init){
 		// Creates the right number of digits
-		var initial = init.toString(),
-		count = initial.length,
-		bit = 1, i;
-		for (i = 0; i < count; i++){
+		var initial = init.toString();
+		var count = initial.length;
+		var bit = 1;
+		// Sets them to the right number
+		var digits = splitToArray(initial);
+
+		for (var i = 0; i < count; i++){
 			newDigit = doc.createElement('div');
 			newDigit.className = 'cd';
-			newDigit.id = divId + '_d' + i;
-			newDigit.innerHTML = newDigit.innerHTML = '<div class="digit t" id="' + divId + '_t_d' + i + '"></div><div class="digit b" id="' + divId + '_b_d' + i + '"></div>';
+			newDigit.innerHTML = '<div class="digit t"></div><div class="digit b"></div>';
+
+			digit_els[i] = {
+				main: newDigit,
+				top: newDigit.firstChild,
+				bot: newDigit.lastChild
+			};
+
 			div.insertBefore(newDigit, div.firstChild);
 			if (bit != (count) && bit % 3 == 0){
 				newComma = doc.createElement('div');
@@ -384,12 +408,9 @@ var flipCounter = function(d, options){
 				div.insertBefore(newComma, div.firstChild);
 			}
 			bit++;
-		}
-		// Sets them to the right number
-		var digits = splitToArray(initial);
-		for (i = 0; i < count; i++){
-			doc.getElementById(divId + '_t_d' + i).style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
-			doc.getElementById(divId + '_b_d' + i).style.backgroundPosition = '0 -' + (digits[i] * o.bFH + o.bOffset) + 'px';
+
+			digit_els[i].top.style.backgroundPosition = '0 -' + (digits[i] * o.tFH) + 'px';
+			digit_els[i].bot.style.backgroundPosition = '0 -' + (digits[i] * o.bFH + o.bOffset) + 'px';
 		}
 		// Do first animation
 		if (o.auto === true) nextCount = setTimeout(doCount, o.pace);
