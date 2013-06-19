@@ -1,15 +1,22 @@
 # flip-counter
 
-## install
+Apple style flip counter
 
-```
-npm install flip-counter
-```
+[Interactive Readme](http://tryme.jit.su/shtylman/flip-counter/)
 
 ## use
 
 ```js
 var flipcounter = require('flip-counter');
+
+var div = document.createElement('div');
+div.className = 'flip-counter';
+
+var counter = flipcounter(div, {
+    value: 3
+});
+
+div // =>
 ```
 
 ## style
@@ -31,6 +38,12 @@ ln -s ../node_modules/flip-counter/img/digits.png .
 ```
 
 If you wish to provide your own rule, see the `css/counter.css` file for which style to override.
+
+## install
+
+```
+npm install flip-counter
+```
 
 ## Credits
 Based on work by Chris Nanney
