@@ -1,0 +1,11 @@
+/*
+THIS IS NOT THE STYLE FILE YOU WANT
+Overrides for css/counter.css for tryme demo
+
+See css/counter.css for the full style file
+*/
+
+.flip-counter .digit {
+    background: url(img/digits.png) 0 0 no-repeat;
+}
+
